@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   ICON · Sistema de diseño CLEAN INDUSTRIAL
+   Paleta provisional: los azules CLIMB deben validarse con los archivos de
+   marca definitivos. Basta con ajustar los tokens --color-climb-*.
+   ========================================================================== */
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Azules corporativos CLIMB (provisionales) */
+  --color-climb-50: #eef4fc;
+  --color-climb-100: #dbe7f8;
+  --color-climb-200: #b6cdf0;
+  --color-climb-300: #82a9e3;
+  --color-climb-400: #4c82d2;
+  --color-climb-500: #1f5fbf;
+  --color-climb-600: #174d9f;
+  --color-climb-700: #123e82;
+  --color-climb-800: #0e3066;
+  --color-climb-900: #0a2149;
+  --color-climb-950: #061531;
+
+  /* Grises acero (fríos) */
+  --color-steel-25: #fbfcfd;
+  --color-steel-50: #f6f7f9;
+  --color-steel-100: #eef1f4;
+  --color-steel-150: #e6eaee;
+  --color-steel-200: #dde2e8;
+  --color-steel-300: #c7cfd8;
+  --color-steel-400: #98a3b0;
+  --color-steel-500: #6b7684;
+  --color-steel-600: #4c5663;
+  --color-steel-700: #35404c;
+  --color-steel-800: #1f2833;
+  --color-steel-900: #111821;
+  --color-ink: #0a1422;
+
+  /* Señales */
+  --color-ok-50: #ecf8f2;
+  --color-ok-600: #137a50;
+  --color-warn-50: #fdf6e7;
+  --color-warn-600: #9a6512;
+  --color-err-50: #fdeeec;
+  --color-err-600: #b33326;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  --shadow-card: 0 1px 2px rgb(10 20 34 / 0.04), 0 1px 1px rgb(10 20 34 / 0.03);
+  --shadow-raised: 0 12px 32px -12px rgb(10 33 73 / 0.18), 0 2px 6px rgb(10 20 34 / 0.05);
+  --shadow-focus: 0 0 0 3px rgb(31 95 191 / 0.25);
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-fade-up: fade-up 0.6s var(--ease-out-quint) both;
+  --animate-cabin: cabin 14s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-counter: counter 14s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cabin {
+    0%, 8% { transform: translateY(0); }
+    42%, 58% { transform: translateY(-188px); }
+    92%, 100% { transform: translateY(0); }
+  }
+  @keyframes counter {
+    0%, 8% { transform: translateY(0); }
+    42%, 58% { transform: translateY(96px); }
+    92%, 100% { transform: translateY(0); }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white text-steel-800 antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: var(--color-climb-100);
+    color: var(--color-climb-900);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-climb-500);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  h1, h2, h3, h4 {
+    @apply text-ink;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-8;
+  }
+  .eyebrow {
+    @apply font-mono text-[11px] font-medium tracking-[0.14em] text-climb-600 uppercase;
+  }
+  .sku {
+    @apply font-mono text-[12px] tracking-wide text-steel-500;
+  }
+  /* Retícula técnica tenue para fondos industriales */
+  .blueprint {
+    background-image:
+      linear-gradient(to right, rgb(31 95 191 / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(31 95 191 / 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .blueprint-fine {
+    background-image:
+      linear-gradient(to right, rgb(10 33 73 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(10 33 73 / 0.045) 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+  .hairline {
+    @apply border-steel-150;
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-steel-100) 0%, var(--color-steel-50) 50%, var(--color-steel-100) 100%);
+    background-size: 200% 100%;
+    @apply animate-shimmer rounded-md;
+  }
+  .field-input {
+    @apply block w-full rounded-md border border-steel-200 bg-white px-3 py-2.5 text-[15px] text-ink transition-[border-color,box-shadow] duration-150 placeholder:text-steel-400 hover:border-steel-300 focus:border-climb-500 focus:shadow-[var(--shadow-focus)] focus:outline-none disabled:cursor-not-allowed disabled:bg-steel-50 disabled:text-steel-500 sm:text-sm;
+  }
+  .field-input[aria-invalid="true"] {
+    @apply border-err-600;
+  }
+  .table-base {
+    @apply w-full border-collapse text-left text-sm;
+  }
+  .table-base th {
+    @apply border-b border-steel-200 bg-steel-50 px-3 py-2.5 font-mono text-[11px] font-medium tracking-wider text-steel-500 uppercase;
+  }
+  .table-base td {
+    @apply border-b border-steel-100 px-3 py-3 align-middle;
+  }
+  .table-base tbody tr {
+    @apply transition-colors hover:bg-steel-25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
