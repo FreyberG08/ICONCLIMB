@@ -8,7 +8,8 @@ import { ProductImage } from "./product-image";
 export function ProductCard({ product, priority }: { product: CatalogProduct; priority?: boolean }) {
   const avail = availabilityLabel(product.availability, product.saleMode);
   return (
-    <article className="group relative flex flex-col rounded-lg border border-steel-150 bg-white p-3 transition-[border-color,box-shadow,transform] duration-300 ease-[var(--ease-out-quint)] hover:-translate-y-0.5 hover:border-steel-200 hover:shadow-[var(--shadow-raised)]">
+    <article data-tilt data-cursor="Ver ficha" className="card-sheen group relative flex flex-col rounded-xl border border-steel-150 bg-white p-3 transition-[border-color,box-shadow] duration-300 ease-[var(--ease-out-quint)] hover:border-climb-200 hover:shadow-[0_30px_60px_-30px_rgb(10_33_73/0.35)]">
+      <span className="card-glare pointer-events-none absolute inset-0 z-10 rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true" />
       <ProductImage src={product.imageUrl} alt={product.name} sku={product.sku} categorySlug={product.categorySlug} priority={priority} />
       <div className="flex flex-1 flex-col px-1 pt-4 pb-1">
         <div className="flex items-center justify-between gap-2">
@@ -40,7 +41,7 @@ export function ProductCard({ product, priority }: { product: CatalogProduct; pr
 
 export function ProductGrid({ products, priorityCount = 0 }: { products: CatalogProduct[]; priorityCount?: number }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
+    <div data-stagger className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
       {products.map((p, i) => (
         <ProductCard key={p.id} product={p} priority={i < priorityCount} />
       ))}

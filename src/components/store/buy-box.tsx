@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { QuantityInput } from "./quantity";
 import { useStore } from "./store-state";
 import { WhatsAppIcon } from "./whatsapp-button";
+import { flyToTarget } from "@/components/motion/fly-to-cart";
 
 export function BuyBox({ product, preview = false }: { product: CatalogProduct; preview?: boolean }) {
   const { addToCart, addToQuote, notify } = useStore();
@@ -49,6 +50,7 @@ export function BuyBox({ product, preview = false }: { product: CatalogProduct; 
             disabled={soldOut || preview}
             onClick={() => {
               addToCart(product.id, qty, snapshot);
+              flyToTarget(document.querySelector("[data-gallery-main]"), "cart");
               notify(`${qty} × ${product.name} agregado al carrito`, "/carrito", "Ver carrito");
             }}
           >
@@ -62,6 +64,7 @@ export function BuyBox({ product, preview = false }: { product: CatalogProduct; 
             disabled={preview}
             onClick={() => {
               addToQuote(product.id, qty, snapshot);
+              flyToTarget(document.querySelector("[data-gallery-main]"), "quote");
               notify("Agregado a su lista de cotización", "/cotizacion", "Ver lista");
             }}
           >

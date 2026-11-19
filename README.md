@@ -185,7 +185,18 @@ El logo original se coloca en `public/brand/` y se activa con `NEXT_PUBLIC_LOGO_
 
 ---
 
-## 8. Estructura
+## 8. Experiencia animada
+
+La tienda está concebida como un **recorrido en ascensor** (GSAP + ScrollTrigger + SplitText y desplazamiento suave con Lenis):
+
+- **Intro de puertas** en la primera visita de cada sesión (display de piso que cuenta y puertas que se abren) y apertura de puertas al cambiar de página.
+- **Portada**: titular que se arma letra por letra, ilustración con profundidad 3D que sigue al mouse, etiquetas flotantes, foco de luz sobre la retícula y salida con el scroll.
+- **El recorrido**: sección fija donde la cabina baja por el hueco y cada piso presenta una categoría.
+- **Indicador de piso** lateral (pantallas anchas), cintas infinitas que reaccionan a la velocidad del scroll, tarjetas con inclinación 3D y brillo, botones magnéticos, cursor con etiquetas, zoom tipo lupa en la ficha y producto que "vuela" al carrito.
+
+Los efectos se declaran con atributos `data-*` (ver `src/components/motion/effects.ts`). Con "reducir movimiento" activado en el sistema, todo se muestra estático; si el motor no arranca, el contenido aparece igualmente a los 4 s.
+
+## 9. Estructura
 
 ```
 src/
@@ -202,7 +213,7 @@ supabase/
 tests/e2e-flow.cjs      prueba de extremo a extremo
 ```
 
-## 9. Próximas etapas
+## 10. Próximas etapas
 
 - **Etapa 2:** pasarela de pago, impuestos, facturación, envíos, correos transaccionales, WhatsApp, subida directa de archivos grandes, CAPTCHA (Turnstile) en formularios.
 - **Etapa 3:** cuentas empresariales y precios especiales, historial y repetición de pedidos, cotización con fotografías e identificación asistida con revisión humana, integración con ClickUp/CRM, analítica comercial y campañas.

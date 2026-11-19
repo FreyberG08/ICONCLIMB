@@ -121,11 +121,11 @@ export function Header({ categories }: { categories: NavCategory[] }) {
 
         <div className="ml-auto flex items-center gap-1 md:ml-0">
           <Link href="/cotizacion" className="relative grid size-10 place-items-center rounded-md text-steel-700 hover:bg-steel-100 hover:text-ink" aria-label={`Lista de cotización (${quoteCount})`}>
-            <ClipboardList className="size-5" aria-hidden="true" />
+            <ClipboardList className="size-5" aria-hidden="true" data-fly-target="quote" />
             <CountBadge n={quoteCount} />
           </Link>
           <Link href="/carrito" className="relative grid size-10 place-items-center rounded-md text-steel-700 hover:bg-steel-100 hover:text-ink" aria-label={`Carrito (${cartCount} unidades)`}>
-            <ShoppingCart className="size-5" aria-hidden="true" />
+            <ShoppingCart className="size-5" aria-hidden="true" data-fly-target="cart" />
             <CountBadge n={cartCount} />
           </Link>
         </div>

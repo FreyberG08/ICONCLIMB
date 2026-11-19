@@ -37,7 +37,7 @@ export function ProductDetailView({ product, preview = false }: { product: Catal
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-24">
             <p className="sku">SKU {product.sku}{product.brandName && <> · {product.brandName}</>}</p>
-            <h1 className="mt-2 text-[28px] leading-tight font-semibold sm:text-[34px]">{product.name}</h1>
+            <h1 data-split="words" className="mt-2 text-[28px] leading-tight font-semibold sm:text-[34px]">{product.name}</h1>
             {product.shortDescription && <p className="mt-3 text-[15.5px] leading-relaxed text-steel-600">{product.shortDescription}</p>}
             <div className="mt-6">
               <BuyBox product={product} preview={preview} />

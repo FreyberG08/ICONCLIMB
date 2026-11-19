@@ -178,3 +178,115 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   MOVIMIENTO · efectos de la experiencia "recorrido en ascensor"
+   ========================================================================== */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Estado inicial oculto solo antes de que el motor tome el control */
+html.motion:not([data-motion-init]) [data-reveal],
+html.motion:not([data-motion-init]) [data-stagger] > *,
+html.motion [data-split],
+html.motion [data-hero-hide] { visibility: hidden; }
+
+.split-line { padding-bottom: 0.08em; margin-bottom: -0.08em; }
+
+/* Puertas del ascensor */
+.elevator-doors { display: none; }
+html.intro .elevator-doors { display: block; }
+.door-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+html.intro body { overflow: hidden; }
+
+/* Portada */
+.hero-spotlight {
+  background: radial-gradient(520px circle at var(--sx, 70%) var(--sy, 30%), rgb(31 95 191 / 0.12), transparent 60%);
+  transition: background 0.15s linear;
+}
+.hero-aurora {
+  background: conic-gradient(from 120deg, rgb(31 95 191 / 0.22), rgb(130 169 227 / 0.12), rgb(10 33 73 / 0.0), rgb(31 95 191 / 0.22));
+  filter: blur(70px);
+  animation: aurora 18s linear infinite;
+}
+@keyframes aurora { to { transform: rotate(360deg); } }
+.hero-chip {
+  box-shadow: 0 18px 40px -18px rgb(10 33 73 / 0.35), 0 2px 6px rgb(10 20 34 / 0.06);
+}
+
+/* Recorrido */
+.journey-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+.journey-tick.is-active span:first-child { color: #82a9e3; text-shadow: 0 0 10px rgb(130 169 227 / 0.9); }
+.journey-tick.is-active span:last-child { width: 1.75rem; background: #82a9e3; }
+.journey-tick span { transition: all 0.4s var(--ease-out-quint); }
+
+/* Display de piso */
+.floor-roll { animation: floor-roll 0.55s var(--ease-out-quint) both; }
+.floor-roll[data-dir="-1"] { animation-name: floor-roll-down; }
+@keyframes floor-roll { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes floor-roll-down { from { transform: translateY(-110%); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Tarjetas con brillo 3D */
+[data-tilt] { transform-style: preserve-3d; will-change: transform; }
+.card-glare {
+  background: radial-gradient(380px circle at var(--gx, 50%) var(--gy, 0%), rgb(255 255 255 / 0.55), transparent 45%);
+  mix-blend-mode: soft-light;
+}
+.card-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(500px circle at var(--gx, 50%) var(--gy, 50%), rgb(31 95 191 / 0.10), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.card-sheen:hover::after { opacity: 1; }
+
+/* Foco de luz en secciones oscuras */
+[data-spotlight] { position: relative; }
+[data-spotlight]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px circle at var(--sx, 50%) var(--sy, 50%), rgb(76 130 210 / 0.18), transparent 55%);
+  pointer-events: none;
+}
+
+/* Texto con degradado en movimiento */
+.text-shine {
+  background: linear-gradient(100deg, var(--color-climb-700) 20%, var(--color-climb-400) 40%, var(--color-climb-700) 60%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 6s linear infinite;
+}
+@keyframes shine { to { background-position: -220% 0; } }
+
+/* Botón con barrido */
+.btn-sweep { position: relative; overflow: hidden; isolation: isolate; }
+.btn-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-climb-900);
+  transform: translateY(101%);
+  transition: transform 0.55s var(--ease-out-quint);
+}
+.btn-sweep:hover::before { transform: translateY(0); }

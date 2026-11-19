@@ -31,7 +31,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="es" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Activa la experiencia animada antes del primer pintado (sin parpadeos).
+            Si el motor no arranca en 4 s, el contenido se muestra igual. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=document.documentElement;if(location.pathname.indexOf('/admin')===0||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('motion');try{if(!sessionStorage.getItem('icon.intro'))d.classList.add('intro')}catch(e){}setTimeout(function(){if(!d.dataset.motionInit){d.classList.remove('motion','intro')}},4000)}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-dvh font-sans">{children}</body>
     </html>
   );

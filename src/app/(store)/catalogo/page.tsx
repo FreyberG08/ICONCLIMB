@@ -123,7 +123,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
 
       <header className="mt-4 flex flex-col gap-6 border-b border-steel-150 pb-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-2xl">
-          <h1 className="text-[30px] leading-tight font-semibold sm:text-[38px]">
+          <h1 data-split="words" className="text-[30px] leading-tight font-semibold sm:text-[38px]">
             {state.q ? <>Resultados para “{state.q}”</> : category ? category.name : "Catálogo de repuestos"}
           </h1>
           <p className="mt-2 text-[15px] text-steel-600">
