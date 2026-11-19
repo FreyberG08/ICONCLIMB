@@ -70,6 +70,9 @@ export function ElevatorJourney({ stops }: { stops: Stop[] }) {
   }, [stops.length]);
 
   return (
+    // Contenedor estable: GSAP inserta su "pin-spacer" aquí dentro, así React
+    // puede desmontar la sección al cambiar de página sin perder el nodo.
+    <div className="journey-wrap">
     <section ref={root} data-floor="01" data-floor-label="Sistemas" className="journey relative overflow-hidden bg-climb-950 text-white" aria-labelledby="journey-title">
       <div className="journey-grid absolute inset-0" aria-hidden="true" />
       <div className="container-x relative py-20 lg:flex lg:h-dvh lg:items-center lg:py-0">
@@ -136,5 +139,6 @@ export function ElevatorJourney({ stops }: { stops: Stop[] }) {
         </div>
       </div>
     </section>
+    </div>
   );
 }

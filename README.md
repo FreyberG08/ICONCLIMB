@@ -163,7 +163,13 @@ Prueba de extremo a extremo (con la app corriendo en modo demostración):
 BASE_URL=http://localhost:3000 node tests/e2e-flow.cjs
 ```
 
-Cubre: login, creación con fotografía, borrador invisible al público, publicación, búsqueda por SKU y referencia, filtros, carrito y pedido, cotización con pieza no catalogada, seguimiento, inventario (reservas y despacho), bandejas, restricciones del editor, protección de la exportación y ausencia de desbordamiento en móvil.
+Navegación entre páginas con animaciones (escritorio y móvil):
+
+```bash
+BASE_URL=http://localhost:3000 node tests/e2e-navigation.cjs
+```
+
+La prueba funcional cubre: login, creación con fotografía, borrador invisible al público, publicación, búsqueda por SKU y referencia, filtros, carrito y pedido, cotización con pieza no catalogada, seguimiento, inventario (reservas y despacho), bandejas, restricciones del editor, protección de la exportación y ausencia de desbordamiento en móvil.
 
 Pruebas de la base de datos (requieren PostgreSQL ≥ 15; en local se emulan los objetos de Supabase con `supabase/tests/supabase_stub.sql`):
 
