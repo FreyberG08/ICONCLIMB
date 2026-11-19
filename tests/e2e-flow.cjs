@@ -9,7 +9,8 @@ const path = require("node:path");
 const BASE = process.env.BASE_URL || "http://localhost:3000";
 const PASSWORD = process.env.DEMO_PASSWORD || "icon-demo-2026";
 const SHOTS = process.argv[2] || null;
-const SKU = `E2E-${Date.now().toString(36).toUpperCase()}`;
+const SKU = `E2E-${require("node:crypto").randomBytes(4).toString("hex").toUpperCase()}`;
+const NAME = `Placa de prueba ${SKU}`;
 const results = [];
 
 function ok(label) {
@@ -48,11 +49,11 @@ async function login(page, email) {
 
   // 2. Crear producto con fotografía y guardar borrador
   await page.goto(`${BASE}/admin/productos/nuevo`);
-  await page.fill("#name", "Placa de prueba E2E para botonera");
+  await page.fill("#name", NAME);
   await page.fill("#sku", SKU);
   await page.selectOption("#cat", { label: "Botoneras y displays" });
   await page.fill("#model", "E2E-MOD");
-  await page.fill("#ref", "REF-E2E-77");
+  await page.fill("#ref", `REF-${SKU}`);
   await page.fill("#short", "Repuesto creado por la prueba automática de extremo a extremo.");
   await page.getByRole("radio", { name: /Compra directa/ }).click();
   await page.fill("#price", "49.90");
@@ -82,18 +83,18 @@ async function login(page, email) {
   const anon = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const shop = await anon.newPage();
   await shop.goto(`${BASE}/catalogo?q=${SKU}`);
-  await shop.waitForSelector(`text=Placa de prueba E2E para botonera`);
+  await shop.waitForSelector(`text=${NAME}`);
   ok("Búsqueda por SKU encuentra el producto");
-  await shop.goto(`${BASE}/catalogo?q=REF-E2E-77`);
-  await shop.waitForSelector(`text=Placa de prueba E2E para botonera`);
+  await shop.goto(`${BASE}/catalogo?q=REF-${SKU}`);
+  await shop.waitForSelector(`text=${NAME}`);
   ok("Búsqueda por referencia original encuentra el producto");
-  await shop.goto(`${BASE}/catalogo?categoria=botoneras-y-displays&modo=direct&disponibilidad=available`);
-  await shop.waitForSelector(`text=Placa de prueba E2E para botonera`);
+  await shop.goto(`${BASE}/catalogo?categoria=botoneras-y-displays&modo=direct&disponibilidad=available&q=${SKU}`);
+  await shop.waitForSelector(`text=${NAME}`);
   await shot(shop, "05-catalogo-filtros");
   ok("Filtros de categoría, modalidad y disponibilidad lo reconocen");
 
   // 5. Compra directa → carrito → pedido
-  await shop.click(`text=Placa de prueba E2E para botonera`);
+  await shop.click(`text=${NAME}`);
   await shop.waitForSelector("text=Agregar al carrito");
   await shot(shop, "06-ficha-producto");
   await shop.getByRole("button", { name: "Aumentar cantidad" }).click();
