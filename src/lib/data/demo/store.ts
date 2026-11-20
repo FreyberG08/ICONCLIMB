@@ -1,7 +1,7 @@
 import "server-only";
 import fs from "node:fs";
 import path from "node:path";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import type {
   AuditEntry, Brand, Category, Compatibility, InventoryMovement, Order, ProductDocument, ProductImage,
   ProductStatus, Quote, Role, SaleMode, Spec,
@@ -70,7 +70,7 @@ export interface DemoDB {
   seq: { order: number; quote: number; movement: number; audit: number; event: number };
 }
 
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export const DEMO_DIR = process.env.DEMO_DATA_DIR || (process.env.VERCEL ? "/tmp/icon-demo" : path.join(process.cwd(), ".demo-data"));
 const DB_FILE = path.join(DEMO_DIR, "db.json");
@@ -86,10 +86,23 @@ export function uid() {
   return randomUUID();
 }
 
+/**
+ * Identificador DETERMINISTA para los datos de ejemplo: todas las instancias del
+ * servidor (Vercel ejecuta varias en paralelo) generan los mismos IDs, así una
+ * sesión o un producto del carrito se reconocen en cualquiera de ellas.
+ */
+function sid(key: string) {
+  const h = createHash("sha1").update(`icon-demo:${key}`).digest("hex");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
+}
+
+/** Fecha fija de los datos de ejemplo (idéntica en todas las instancias). */
+const SEED_TIME = "2026-11-01T12:00:00.000Z";
+
 function seed(): DemoDB {
-  const t = now();
+  const t = SEED_TIME;
   const cat = (name: string, slug: string, description: string, position: number): Category => ({
-    id: uid(), parentId: null, name, slug, description, position, active: true,
+    id: sid(`cat:${slug}`), parentId: null, name, slug, description, position, active: true,
   });
   const categories = [
     cat("Tarjetas y electrónica", "tarjetas-y-electronica", "Tarjetas de control, maniobra, comunicación y módulos electrónicos.", 10),
@@ -104,8 +117,8 @@ function seed(): DemoDB {
   ];
   const bySlug = (s: string) => categories.find((c) => c.slug === s)!.id;
   const brands: Brand[] = [
-    { id: uid(), name: "Marca Demo A", slug: "marca-demo-a", active: true },
-    { id: uid(), name: "Marca Demo B", slug: "marca-demo-b", active: true },
+    { id: sid("brand:a"), name: "Marca Demo A", slug: "marca-demo-a", active: true },
+    { id: sid("brand:b"), name: "Marca Demo B", slug: "marca-demo-b", active: true },
   ];
 
   type SeedProduct = Partial<DemoProduct> & { sku: string; name: string; category: string; stock: number };
@@ -159,7 +172,7 @@ function seed(): DemoDB {
   const movements: DemoDB["movements"] = [];
   let mv = 0;
   for (const it of items) {
-    const id = uid();
+    const id = sid(`product:${it.sku}`);
     const brandName = brands.find((b) => b.id === it.brandId)?.name ?? null;
     const p: DemoProduct = {
       id,
@@ -208,7 +221,7 @@ function seed(): DemoDB {
     ["DEMO-FR-0009", "Freno electromagnético (en preparación)", "pending_photos"],
     ["DEMO-DP-0010", "Display de piso (borrador)", "draft"],
   ] as const) {
-    const id = uid();
+    const id = sid(`product:${sku}`);
     const p: DemoProduct = {
       id, sku, slug: sku.toLowerCase(), name, categoryId: null, subcategoryId: null, brandId: null, model: null,
       reference: null, altCodes: [], shortDescription: null, description: null, specs: [], price: null, currency: "USD",
@@ -221,10 +234,10 @@ function seed(): DemoDB {
   }
 
   const users: DemoUser[] = [
-    { id: uid(), email: "admin@icon.demo", fullName: "Administrador (demo)", role: "admin", active: true, createdAt: t },
-    { id: uid(), email: "editor@icon.demo", fullName: "Editor de catálogo (demo)", role: "editor", active: true, createdAt: t },
-    { id: uid(), email: "almacen@icon.demo", fullName: "Almacén (demo)", role: "warehouse", active: true, createdAt: t },
-    { id: uid(), email: "revisor@icon.demo", fullName: "Revisor (demo)", role: "reviewer", active: true, createdAt: t },
+    { id: sid("user:admin"), email: "admin@icon.demo", fullName: "Administrador (demo)", role: "admin", active: true, createdAt: t },
+    { id: sid("user:editor"), email: "editor@icon.demo", fullName: "Editor de catálogo (demo)", role: "editor", active: true, createdAt: t },
+    { id: sid("user:almacen"), email: "almacen@icon.demo", fullName: "Almacén (demo)", role: "warehouse", active: true, createdAt: t },
+    { id: sid("user:revisor"), email: "revisor@icon.demo", fullName: "Revisor (demo)", role: "reviewer", active: true, createdAt: t },
   ];
 
   return {

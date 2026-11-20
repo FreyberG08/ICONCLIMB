@@ -8,7 +8,9 @@ export function DemoBanner({ admin = false }: { admin?: boolean }) {
       <div className="container-x flex flex-wrap items-center justify-center gap-x-3 gap-y-1 py-2 text-center text-[12.5px]">
         <span className="rounded bg-warn-600 px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-wider text-white">MODO DEMOSTRACIÓN</span>
         <span>
-          Productos de ejemplo y datos locales. Sin conexión a Supabase: no se procesan pedidos reales ni pagos.
+          {admin
+            ? "Sin base de datos: en Vercel los productos, pedidos y cotizaciones que cree aquí no se guardan de forma permanente ni se ven igual en todas las visitas. Conecte Supabase para operar."
+            : "Productos de ejemplo y datos locales. Sin conexión a Supabase: no se procesan pedidos reales ni pagos."}
           {!admin && <> <Link href="/admin" className="font-medium underline underline-offset-2">Ir al panel</Link></>}
         </span>
       </div>

@@ -106,7 +106,7 @@ export function Header({ categories }: { categories: NavCategory[] }) {
               key={n.href}
               href={n.href}
               className={cn(
-                "inline-flex h-9 items-center rounded-md px-3 text-[14px] font-medium transition-colors",
+                "inline-flex h-9 items-center rounded-md px-3 text-[14px] font-medium whitespace-nowrap transition-colors",
                 pathname === n.href ? "text-ink" : "text-steel-700 hover:bg-steel-100 hover:text-ink",
               )}
             >

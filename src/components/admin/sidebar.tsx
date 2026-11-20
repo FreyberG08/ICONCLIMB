@@ -61,7 +61,7 @@ export function Sidebar({ user, counts }: { user: StaffUser; counts: { quotes: n
         <Link href="/admin"><Logo compact /></Link>
         <span className="rounded bg-steel-100 px-1.5 py-0.5 font-mono text-[10px] tracking-wider text-steel-500">PANEL</span>
       </div>
-      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5" aria-label="Panel">
+      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5 [scrollbar-width:thin] [scrollbar-color:var(--color-steel-200)_transparent]" aria-label="Panel">
         {NAV.map((group) => {
           const items = group.items.filter((i) => (Array.isArray(i.perm) ? i.perm.some((p) => can(user.role, p)) : can(user.role, i.perm)));
           if (!items.length) return null;
