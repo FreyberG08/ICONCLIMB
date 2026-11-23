@@ -8,6 +8,7 @@ import { registerIntakeAction } from "@/app/admin/actions";
 import { Alert } from "@/components/ui/misc";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 export function IntakeForm({ categories, canStock }: { categories: Category[]; canStock: boolean }) {
   const router = useRouter();
@@ -23,7 +24,7 @@ export function IntakeForm({ categories, canStock }: { categories: Category[]; c
         e.preventDefault();
         setError(null);
         start(async () => {
-          const res = await registerIntakeAction({ ...v, quantity: Number(v.quantity) || 0 });
+          const res = await safeCall(() => registerIntakeAction({ ...v, quantity: Number(v.quantity) || 0 }));
           if (!res.ok) return setError(res.error);
           router.push(`/admin/productos/${res.data.id}?creado=1`);
         });

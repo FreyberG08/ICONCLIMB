@@ -8,6 +8,7 @@ import type { OrderStatus, PaymentStatus, QuoteStatus } from "@/lib/types";
 import { Alert } from "@/components/ui/misc";
 import { Button } from "@/components/ui/button";
 import { Field, Select, Textarea } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 type Kind = "order" | "quote";
 
@@ -29,7 +30,7 @@ export function StatusControl({ kind, id, current, closed }: { kind: Kind; id: s
         if (kind === "order" && status === "cancelled" && !confirm("¿Cancelar el pedido? Se liberarán las unidades reservadas.")) return;
         if (kind === "order" && (status === "shipped" || status === "delivered") && !confirm("Se descontará la existencia física de los productos del pedido. ¿Continuar?")) return;
         start(async () => {
-          const res = kind === "order" ? await setOrderStatusAction(id, status as OrderStatus, note) : await setQuoteStatusAction(id, status as QuoteStatus, note);
+          const res = kind === "order" ? await safeCall(() => setOrderStatusAction(id, status as OrderStatus, note)) : await safeCall(() => setQuoteStatusAction(id, status as QuoteStatus, note));
           if (!res.ok) return setError(res.error);
           setNote("");
           router.refresh();
@@ -64,7 +65,7 @@ export function PaymentControl({ id, current }: { id: string; current: PaymentSt
         e.preventDefault();
         if (status === "paid" && !confirm("Confirme que el pago fue verificado (transferencia, depósito u otro medio). Esta acción queda auditada.")) return;
         start(async () => {
-          const res = await setOrderPaymentAction(id, status, note);
+          const res = await safeCall(() => setOrderPaymentAction(id, status, note));
           if (!res.ok) return setError(res.error);
           setNote("");
           router.refresh();
@@ -96,7 +97,7 @@ export function NoteForm({ kind, id }: { kind: Kind; id: string }) {
       onSubmit={(e) => {
         e.preventDefault();
         start(async () => {
-          const res = kind === "order" ? await addOrderNoteAction(id, note) : await addQuoteNoteAction(id, note);
+          const res = kind === "order" ? await safeCall(() => addOrderNoteAction(id, note)) : await safeCall(() => addQuoteNoteAction(id, note));
           if (!res.ok) return setError(res.error);
           setNote("");
           setError(null);

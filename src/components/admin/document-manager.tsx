@@ -8,6 +8,7 @@ import { formatBytes } from "@/lib/format";
 import { Alert } from "@/components/ui/misc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 export function DocumentManager({ productId, initial }: { productId: string; initial: ProductDocument[] }) {
   const [docs, setDocs] = useState(initial);
@@ -62,7 +63,7 @@ export function DocumentManager({ productId, initial }: { productId: string; ini
                   onChange={(e) => {
                     const v = e.target.checked;
                     setDocs((list) => list.map((x) => (x.id === d.id ? { ...x, isPublic: v } : x)));
-                    start(async () => { const r = await updateDocumentAction(d.id, { isPublic: v }); if (!r.ok) setError(r.error); });
+                    start(async () => { const r = await safeCall(() => updateDocumentAction(d.id, { isPublic: v })); if (!r.ok) setError(r.error); });
                   }}
                 />
                 Descarga pública autorizada
@@ -75,7 +76,7 @@ export function DocumentManager({ productId, initial }: { productId: string; ini
                 onClick={() => {
                   if (!confirm(`¿Eliminar "${d.title}"?`)) return;
                   setDocs((list) => list.filter((x) => x.id !== d.id));
-                  start(async () => { const r = await deleteDocumentAction(d.id); if (!r.ok) setError(r.error); });
+                  start(async () => { const r = await safeCall(() => deleteDocumentAction(d.id)); if (!r.ok) setError(r.error); });
                 }}
               >
                 <Trash2 className="size-4" />

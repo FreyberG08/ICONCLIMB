@@ -20,6 +20,7 @@ import { DocumentManager } from "./document-manager";
 import { MovementButton } from "./movement-dialog";
 import { ProductStatusBadge } from "./status-badge";
 import { cn } from "@/lib/cn";
+import { safeCall } from "@/lib/client/safe-call";
 
 interface Perms {
   canEdit: boolean;
@@ -158,7 +159,7 @@ export function ProductForm({
     setNotice(null);
     setBusy(label);
     try {
-      const res = await saveProduct(product?.id ?? null, toPayload(d, isNew, perms), target);
+      const res = await safeCall(() => saveProduct(product?.id ?? null, toPayload(d, isNew, perms), target));
       if (!res.ok) {
         setError(res.error);
         return;
@@ -411,7 +412,7 @@ export function ProductForm({
                   type="button"
                   className="ml-auto inline-flex items-center gap-1.5 text-[13px] font-medium text-steel-600 hover:text-ink"
                   onClick={() => start(async () => {
-                    const r = await duplicateProductAction(product.id);
+                    const r = await safeCall(() => duplicateProductAction(product.id));
                     if (r.ok) router.push(`/admin/productos/${r.data.id}?duplicado=1`);
                     else setError(r.error);
                   })}

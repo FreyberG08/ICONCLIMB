@@ -9,6 +9,7 @@ import { deleteImageAction, reorderImagesAction, setPrimaryImageAction, updateIm
 import { cn } from "@/lib/cn";
 import { Alert } from "@/components/ui/misc";
 import { Spinner } from "@/components/ui/button";
+import { safeCall } from "@/lib/client/safe-call";
 
 export interface PendingImage {
   key: string;
@@ -103,7 +104,7 @@ export function ImageManager({ productId, initial }: { productId: string; initia
   function persistOrder(next: ProductImage[]) {
     setImages(next);
     start(async () => {
-      const res = await reorderImagesAction(productId, next.map((i) => i.id));
+      const res = await safeCall(() => reorderImagesAction(productId, next.map((i) => i.id)));
       if (!res.ok) setError(res.error);
     });
   }
@@ -151,7 +152,7 @@ export function ImageManager({ productId, initial }: { productId: string; initia
                   aria-label="Texto alternativo de la fotografía"
                   onBlur={(e) => {
                     const alt = e.target.value;
-                    if (alt !== (img.alt ?? "")) start(async () => { await updateImageAltAction(img.id, alt); });
+                    if (alt !== (img.alt ?? "")) start(async () => { await safeCall(() => updateImageAltAction(img.id, alt)); });
                   }}
                   className="w-full rounded border border-steel-200 px-2 py-1 text-[12px] focus:border-climb-500 focus:outline-none"
                 />
@@ -166,7 +167,7 @@ export function ImageManager({ productId, initial }: { productId: string; initia
                       disabled={img.isPrimary}
                       onClick={() => {
                         setImages((l) => l.map((x) => ({ ...x, isPrimary: x.id === img.id })));
-                        start(async () => { const r = await setPrimaryImageAction(productId, img.id); if (!r.ok) setError(r.error); });
+                        start(async () => { const r = await safeCall(() => setPrimaryImageAction(productId, img.id)); if (!r.ok) setError(r.error); });
                       }}
                       className="grid size-7 place-items-center rounded text-steel-500 hover:bg-steel-100 hover:text-climb-600 disabled:text-climb-600"
                       aria-label="Definir como principal"
@@ -181,7 +182,7 @@ export function ImageManager({ productId, initial }: { productId: string; initia
                         const rest = images.filter((x) => x.id !== img.id);
                         if (img.isPrimary && rest[0]) rest[0] = { ...rest[0], isPrimary: true };
                         setImages(rest);
-                        start(async () => { const r = await deleteImageAction(productId, img.id); if (!r.ok) setError(r.error); });
+                        start(async () => { const r = await safeCall(() => deleteImageAction(productId, img.id)); if (!r.ok) setError(r.error); });
                       }}
                       className="grid size-7 place-items-center rounded text-steel-500 hover:bg-err-50 hover:text-err-600"
                       aria-label="Eliminar fotografía"

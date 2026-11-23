@@ -9,6 +9,7 @@ import type { ImportReport } from "@/lib/types";
 import { Alert } from "@/components/ui/misc";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 export const TEMPLATE_COLUMNS = ["sku", "name", "category", "brand", "model", "reference", "alt_codes", "short_description", "description", "price", "currency", "sale_mode", "min_stock", "location", "initial_stock"];
 
@@ -105,7 +106,7 @@ export function ImportPanel({ canImport, canExport }: { canImport: boolean; canE
                 loading={pending}
                 onClick={() => start(async () => {
                   setError(null);
-                  const res = await importProductsAction(rows, update);
+                  const res = await safeCall(() => importProductsAction(rows, update));
                   if (!res.ok) return setError(res.error);
                   setReport(res.data);
                   router.refresh();

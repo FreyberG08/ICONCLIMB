@@ -7,6 +7,7 @@ import { recordMovementAction } from "@/app/admin/actions";
 import { Alert } from "@/components/ui/misc";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 const HELP = {
   entry: "Unidades que ingresan al almacén (compra, devolución, reposición).",
@@ -52,7 +53,7 @@ function MovementDialog({ productId, sku, name, onHand, reserved, onClose }: { p
           e.preventDefault();
           setError(null);
           start(async () => {
-            const res = await recordMovementAction({ productId, type, quantity: n, reason, reference });
+            const res = await safeCall(() => recordMovementAction({ productId, type, quantity: n, reason, reference }));
             if (!res.ok) return setError(res.error);
             ref.current?.close();
             router.refresh();

@@ -13,6 +13,7 @@ import { submitQuote } from "@/app/(store)/actions";
 import { Alert } from "@/components/ui/misc";
 import { Button, LinkButton } from "@/components/ui/button";
 import { Checkbox, Field, Input } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 interface CustomItem {
   key: string;
@@ -50,14 +51,14 @@ export function QuoteView({ initialPiece }: { initialPiece?: string }) {
         if (!total) return setError("Agregue al menos un repuesto a la solicitud.");
         if (!accept) return setError("Debe aceptar el tratamiento de datos para continuar.");
         start(async () => {
-          const res = await submitQuote({
+          const res = await safeCall(() => submitQuote({
             items: [
               ...quote.filter((l) => live.map.has(l.productId)).map((l) => ({ productId: l.productId, description: null, quantity: l.quantity, notes: l.notes })),
               ...custom.map((c) => ({ productId: null, description: c.description, quantity: c.quantity, notes: c.notes })),
             ],
             customer,
             website: hp,
-          });
+          }));
           if (!res.ok) return setError(res.error);
           clearQuote();
           router.push(`/cotizacion/enviada?n=${encodeURIComponent(res.data.number)}`);

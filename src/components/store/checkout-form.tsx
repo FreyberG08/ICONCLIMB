@@ -12,6 +12,7 @@ import { formatMoney, fromCents, toCents } from "@/lib/format";
 import { Alert } from "@/components/ui/misc";
 import { Button, LinkButton } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 export function CheckoutForm() {
   const router = useRouter();
@@ -41,11 +42,11 @@ export function CheckoutForm() {
         setError(null);
         if (!accept) return setError("Debe aceptar el tratamiento de datos para continuar.");
         start(async () => {
-          const res = await placeOrder({
+          const res = await safeCall(() => placeOrder({
             items: valid.map((x) => ({ productId: x.line.productId, quantity: x.line.quantity })),
             customer,
             website: hp,
-          });
+          }));
           if (!res.ok) {
             setError(res.error);
             return;

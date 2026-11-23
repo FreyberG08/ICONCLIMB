@@ -31,6 +31,7 @@ export async function GET() {
       variables_direccion: present(SUPABASE_URL_VARS),
       variables_clave: present(SUPABASE_KEY_VARS),
       site_url: Boolean(process.env.NEXT_PUBLIC_SITE_URL),
+      clave_servicio_para_usuarios: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY),
       conexion,
       ...(detalle ? { detalle } : {}),
     },

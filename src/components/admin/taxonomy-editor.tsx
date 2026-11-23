@@ -10,6 +10,7 @@ import { Alert } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 type CatDraft = { name: string; slug: string; parentId: string; description: string; position: string; active: boolean };
 
@@ -49,7 +50,7 @@ export function CategoryEditor({ categories }: { categories: Category[] }) {
                     aria-label={`Eliminar ${c.name}`}
                     onClick={() => {
                       if (!confirm(`¿Eliminar la categoría "${c.name}"?`)) return;
-                      start(async () => { const r = await deleteCategoryAction(c.id); if (!r.ok) setError(r.error); else router.refresh(); });
+                      start(async () => { const r = await safeCall(() => deleteCategoryAction(c.id)); if (!r.ok) setError(r.error); else router.refresh(); });
                     }}
                   >
                     <Trash2 className="size-4" />
@@ -68,7 +69,7 @@ export function CategoryEditor({ categories }: { categories: Category[] }) {
               e.preventDefault();
               setError(null);
               start(async () => {
-                const r = await saveCategoryAction(editing === "new" ? null : editing, { ...d, slug: d.slug || undefined, position: Number(d.position) || 0 });
+                const r = await safeCall(() => saveCategoryAction(editing === "new" ? null : editing, { ...d, slug: d.slug || undefined, position: Number(d.position) || 0 }));
                 if (!r.ok) return setError(r.error);
                 setEditing(null);
                 router.refresh();
@@ -115,7 +116,7 @@ export function BrandEditor({ brands }: { brands: Brand[] }) {
           e.preventDefault();
           setError(null);
           start(async () => {
-            const r = await saveBrandAction(null, { name, active: true });
+            const r = await safeCall(() => saveBrandAction(null, { name, active: true }));
             if (!r.ok) return setError(r.error);
             setName("");
             router.refresh();
@@ -138,7 +139,7 @@ export function BrandEditor({ brands }: { brands: Brand[] }) {
                 <td>
                   <button
                     type="button"
-                    onClick={() => start(async () => { const r = await saveBrandAction(b.id, { name: b.name, active: !b.active }); if (!r.ok) setError(r.error); else router.refresh(); })}
+                    onClick={() => start(async () => { const r = await safeCall(() => saveBrandAction(b.id, { name: b.name, active: !b.active })); if (!r.ok) setError(r.error); else router.refresh(); })}
                     className="text-left"
                     title="Cambiar estado"
                   >
@@ -151,7 +152,7 @@ export function BrandEditor({ brands }: { brands: Brand[] }) {
                     onClick={() => {
                       const n = prompt("Nuevo nombre de la marca", b.name);
                       if (!n || n === b.name) return;
-                      start(async () => { const r = await saveBrandAction(b.id, { name: n, active: b.active }); if (!r.ok) setError(r.error); else router.refresh(); });
+                      start(async () => { const r = await safeCall(() => saveBrandAction(b.id, { name: n, active: b.active })); if (!r.ok) setError(r.error); else router.refresh(); });
                     }}
                     className="inline-grid size-8 place-items-center rounded text-steel-500 hover:bg-steel-100"
                     aria-label={`Renombrar ${b.name}`}
@@ -160,7 +161,7 @@ export function BrandEditor({ brands }: { brands: Brand[] }) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => { if (confirm(`¿Eliminar "${b.name}"?`)) start(async () => { const r = await deleteBrandAction(b.id); if (!r.ok) setError(r.error); else router.refresh(); }); }}
+                    onClick={() => { if (confirm(`¿Eliminar "${b.name}"?`)) start(async () => { const r = await safeCall(() => deleteBrandAction(b.id)); if (!r.ok) setError(r.error); else router.refresh(); }); }}
                     className="ml-1 inline-grid size-8 place-items-center rounded text-steel-500 hover:bg-err-50 hover:text-err-600"
                     aria-label={`Eliminar ${b.name}`}
                   >

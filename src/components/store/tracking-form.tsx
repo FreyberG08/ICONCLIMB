@@ -10,6 +10,7 @@ import { Alert } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
+import { safeCall } from "@/lib/client/safe-call";
 
 function statusInfo(r: TrackingResult, s: string | null) {
   if (!s) return { label: "—", tone: "neutral" as const };
@@ -32,7 +33,7 @@ export function TrackingForm({ initialNumber }: { initialNumber?: string }) {
           e.preventDefault();
           setError(null);
           start(async () => {
-            const res = await trackRequest(number, email);
+            const res = await safeCall(() => trackRequest(number, email));
             if (!res.ok) {
               setError(res.error);
               setResult(undefined);

@@ -20,10 +20,12 @@ async function run<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
     return { ok: true, data: await fn() };
   } catch (e) {
     if (e instanceof DomainError) return { ok: false, error: e.message };
-    // redirect()/notFound() de Next.js deben propagarse.
-    if (e && typeof e === "object" && "digest" in e) throw e;
+    // Solo redirect()/notFound() de Next.js deben propagarse; todo lo demás se informa.
+    const digest = e && typeof e === "object" && "digest" in e ? String((e as { digest: unknown }).digest) : "";
+    if (/^NEXT_(REDIRECT|NOT_FOUND|HTTP_ERROR_FALLBACK)/.test(digest)) throw e;
     console.error("[AICON admin]", e);
-    return { ok: false, error: "Ocurrió un error inesperado. Intente nuevamente." };
+    const detail = e instanceof Error && e.message ? ` Detalle: ${e.message.slice(0, 300)}` : "";
+    return { ok: false, error: `Ocurrió un error inesperado.${detail}` };
   }
 }
 
@@ -322,11 +324,52 @@ export async function inviteUserAction(payload: { email: string; fullName: strin
       data: { full_name: p.fullName },
       redirectTo: `${site.url}/auth/callback?next=/admin/restablecer`,
     });
-    if (error || !data.user) throw new DomainError(error?.message ?? "No se pudo enviar la invitación");
+    if (error || !data.user) {
+      const msg = error?.message ?? "";
+      if (/not authorized|cannot be used/i.test(msg)) {
+        throw new DomainError("Supabase solo envía correos a miembros de su organización mientras no configure un servidor de correo propio (SMTP). Use «Crear con contraseña temporal».");
+      }
+      if (/rate limit/i.test(msg)) throw new DomainError("Se alcanzó el límite de correos de Supabase (pocos por hora). Use «Crear con contraseña temporal».");
+      throw new DomainError(/already|registered|exists/i.test(msg) ? "Ya existe un usuario con ese correo." : `No se pudo enviar la invitación: ${msg || "error desconocido"}`);
+    }
     // El perfil se crea inactivo por el trigger; el administrador lo activa con el rol elegido.
     await repo.updateUser(data.user.id, { role: p.role, active: true, fullName: p.fullName });
     revalidatePath("/admin/usuarios");
     return { message: `Invitación enviada a ${p.email}.` };
+  });
+}
+
+/**
+ * Crea un usuario con contraseña temporal (sin depender del envío de correos,
+ * que en el plan gratuito de Supabase solo llega a miembros del equipo).
+ */
+export async function createUserAction(payload: { email: string; fullName: string; role: Role; password: string }): Promise<ActionResult<{ message: string }>> {
+  return run(async () => {
+    const repo = await getAdminRepo("users.manage");
+    const p = z
+      .object({
+        email: z.string().trim().toLowerCase().email("Correo inválido"),
+        fullName: z.string().trim().min(2, "Indique el nombre").max(120),
+        role: roleSchema,
+        password: z.string().min(10, "La contraseña temporal debe tener al menos 10 caracteres").max(72),
+      })
+      .parse(payload);
+    if (isDemoMode) throw new DomainError("En modo demostración no se pueden crear usuarios.");
+    const service = supabaseService();
+    if (!service) throw new DomainError("Falta SUPABASE_SERVICE_ROLE_KEY en Vercel. Cree el usuario desde Supabase › Authentication › Users.");
+    const { data, error } = await service.auth.admin.createUser({
+      email: p.email,
+      password: p.password,
+      email_confirm: true,
+      user_metadata: { full_name: p.fullName },
+    });
+    if (error || !data.user) {
+      const msg = error?.message ?? "";
+      throw new DomainError(/already|registered|exists/i.test(msg) ? "Ya existe un usuario con ese correo." : `No se pudo crear el usuario: ${msg || "error desconocido"}`);
+    }
+    await repo.updateUser(data.user.id, { role: p.role, active: true, fullName: p.fullName });
+    revalidatePath("/admin/usuarios");
+    return { message: `Usuario ${p.email} creado. Compártale la contraseña temporal por un canal seguro; podrá cambiarla con "¿Olvidó su contraseña?".` };
   });
 }
 
