@@ -78,6 +78,8 @@ function clean(v: string | undefined) {
 /** Claves de servicio disponibles, en orden de preferencia (nueva primero). */
 export function serviceKeys(): { name: string; key: string }[] {
   return [
+    // Variable propia: editable aunque la integración de Vercel bloquee las suyas.
+    { name: "AICON_SUPABASE_SECRET_KEY", key: clean(process.env.AICON_SUPABASE_SECRET_KEY) },
     { name: "SUPABASE_SECRET_KEY", key: clean(process.env.SUPABASE_SECRET_KEY) },
     { name: "SUPABASE_SERVICE_ROLE_KEY", key: clean(process.env.SUPABASE_SERVICE_ROLE_KEY) },
   ].filter((k) => k.key);

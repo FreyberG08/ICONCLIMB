@@ -1,5 +1,6 @@
 import { getAdminRepo } from "@/lib/data";
 import { isDemoMode } from "@/lib/config";
+import { serviceKeys } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/admin/page-header";
 import { UsersPanel } from "@/components/admin/users-panel";
 
@@ -11,7 +12,7 @@ export default async function UsersPage() {
   return (
     <>
       <PageHeader title="Usuarios y permisos" description="Las cuentas nuevas quedan inactivas hasta que un administrador les asigna un rol. Los permisos se aplican también en la base de datos (RLS)." />
-      <UsersPanel users={users} currentId={repo.user.id} demo={isDemoMode} canInvite={!!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY)} />
+      <UsersPanel users={users} currentId={repo.user.id} demo={isDemoMode} canInvite={serviceKeys().length > 0} />
     </>
   );
 }

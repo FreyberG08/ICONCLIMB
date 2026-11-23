@@ -51,7 +51,8 @@ export async function GET() {
 
   const proyectoUrl = urlProjectRef(supabaseConfig.url);
   const proyectoClavePublica = keyProjectRef(supabaseConfig.anonKey);
-  const proyectoClaveServicio = keys.map((k) => keyProjectRef(k.key)).find(Boolean) ?? null;
+  // Proyecto de la clave que se usará primero (solo detectable en claves JWT heredadas).
+  const proyectoClaveServicio = keys[0] ? keyProjectRef(keys[0].key) : null;
   const avisos: string[] = [];
   if (proyectoClavePublica && proyectoUrl && proyectoClavePublica !== proyectoUrl) avisos.push("La clave pública pertenece a OTRO proyecto de Supabase distinto al de la dirección.");
   if (proyectoClaveServicio && proyectoUrl && proyectoClaveServicio !== proyectoUrl) avisos.push("La clave de servicio pertenece a OTRO proyecto de Supabase distinto al de la dirección.");
@@ -64,7 +65,7 @@ export async function GET() {
       forzado_demo: process.env.ICON_DEMO_MODE === "true",
       variables_direccion: present(SUPABASE_URL_VARS),
       variables_clave: present(SUPABASE_KEY_VARS),
-      variables_clave_servicio: present(["SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY"]),
+      variables_clave_servicio: present(["AICON_SUPABASE_SECRET_KEY", "SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY"]),
       site_url: Boolean(process.env.NEXT_PUBLIC_SITE_URL),
       proyecto: { direccion: proyectoUrl, clave_publica: proyectoClavePublica, clave_servicio: proyectoClaveServicio },
       conexion,
