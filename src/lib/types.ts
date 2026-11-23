@@ -376,6 +376,27 @@ export interface DashboardStats {
   attention: AdminProductRow[];
 }
 
+/** Fila de ranking de ventas o cotizaciones de un producto. */
+export interface SalesRankRow {
+  productId: string;
+  sku: string;
+  name: string;
+  imageUrl: string | null;
+  units: number;
+  revenue: number;
+  currency: string;
+  orders: number;
+}
+
+export interface SalesRanking {
+  /** Días hacia atrás considerados; null = todo el historial. */
+  periodDays: number | null;
+  best: SalesRankRow[];
+  worst: SalesRankRow[];
+  mostQuoted: SalesRankRow[];
+  totalUnits: number;
+}
+
 export interface AuditEntry {
   id: string;
   actorLabel: string;

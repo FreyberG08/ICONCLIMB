@@ -2,7 +2,7 @@ import type {
   AdminProduct, AdminProductRow, AuditEntry, Brand, CatalogProduct, CatalogProductDetail, CatalogQuery,
   Category, CustomerInput, DashboardStats, ImportReport, ImportRow, InventoryMovement, InventoryRow, Order,
   OrderStatus, OrderSummary, Paged, PaymentStatus, ProductDocument, ProductImage, ProductInput, ProductStatus,
-  Quote, QuoteStatus, QuoteSummary, Role, StaffUser, TrackingResult,
+  Quote, QuoteStatus, QuoteSummary, Role, SalesRanking, StaffUser, TrackingResult,
 } from "../types";
 
 /** Error de negocio con mensaje apto para mostrarse al usuario. */
@@ -49,6 +49,8 @@ export interface ProductListFilter {
 export interface AdminRepository {
   readonly user: StaffUser;
   dashboard(): Promise<DashboardStats>;
+  /** Más vendidos, menos vendidos y más cotizados (excluye pedidos cancelados). */
+  salesRanking(periodDays: number | null, limit?: number): Promise<SalesRanking>;
 
   listProducts(filter: ProductListFilter): Promise<Paged<AdminProductRow>>;
   getProduct(id: string): Promise<AdminProduct | null>;

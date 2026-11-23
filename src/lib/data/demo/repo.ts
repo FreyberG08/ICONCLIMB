@@ -4,7 +4,7 @@ import path from "node:path";
 import type { AdminRepository, ProductListFilter, PublicRepository, UploadFile } from "../repository";
 import { DomainError } from "../repository";
 import {
-  assertPerm, assertStatusChange, buildSearchText, EXPORT_COLUMNS, importProductsWith, relevanceScore, searchTokens,
+  assertPerm, assertStatusChange, buildSalesRanking, buildSearchText, EXPORT_COLUMNS, importProductsWith, relevanceScore, searchTokens, sinceDate,
 } from "../shared";
 import { db, demoFileUrl, DEMO_UPLOADS, now, persist, uid, type DemoDB, type DemoProduct } from "./store";
 import { can } from "../../permissions";
@@ -367,6 +367,27 @@ export function createDemoAdminRepo(user: StaffUser): AdminRepository {
         recentQuotes: canQuotes ? (await self.listQuotes({ status: "all" })).slice(0, 5) : [],
         attention: rows.filter((r) => ["pending_review", "pending_photos"].includes(r.status)).slice(0, 6),
       };
+    },
+
+    async salesRanking(periodDays, limit = 5) {
+      assertPerm(user, "orders.view");
+      const d = db();
+      const since = sinceDate(periodDays);
+      const inPeriod = (iso: string) => !since || iso >= since;
+      const sold = d.orders
+        .filter((o) => o.status !== "cancelled" && inPeriod(o.createdAt))
+        .flatMap((o) => o.items.filter((i) => i.productId).map((i) => ({
+          productId: i.productId!, sku: i.sku, name: i.name, quantity: i.quantity, lineTotal: i.lineTotal, currency: o.currency, requestId: o.id,
+        })));
+      const quoted = d.quotes
+        .filter((q) => inPeriod(q.createdAt))
+        .flatMap((q) => q.items.filter((i) => i.productId).map((i) => ({
+          productId: i.productId!, sku: i.sku, name: i.name, quantity: i.quantity, lineTotal: 0, currency: "", requestId: q.id,
+        })));
+      const candidates = d.products
+        .filter((p) => p.status === "published" && p.saleMode === "direct")
+        .map((p) => ({ productId: p.id, sku: p.sku, name: p.name, imageUrl: imagesOf(d, p.id)[0]?.url ?? null, currency: p.currency }));
+      return buildSalesRanking(sold, quoted, candidates, periodDays, limit);
     },
 
     async listProducts(f: ProductListFilter) {

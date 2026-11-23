@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { LinkButton } from "@/components/ui/button";
 import { Alert, Card, CardHeader } from "@/components/ui/misc";
+import { PERIODS, SalesRankingSection } from "@/components/admin/sales-ranking";
 
 export const metadata = { title: "Panel" };
 
@@ -27,13 +28,15 @@ function Stat({ label, value, href, icon: Icon, tone = "default", hint }: { labe
   return href ? <Link href={href}>{body}</Link> : body;
 }
 
-export default async function Dashboard({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
-  const { denied } = await searchParams;
+export default async function Dashboard({ searchParams }: { searchParams: Promise<{ denied?: string; periodo?: string }> }) {
+  const { denied, periodo } = await searchParams;
+  const period = PERIODS.find((p) => p.key === periodo) ?? PERIODS[0];
   const repo = await getAdminRepo("catalog.view");
   const s = await repo.dashboard();
   const u = repo.user;
   const canOrders = can(u.role, "orders.view");
   const canQuotes = can(u.role, "quotes.manage");
+  const ranking = canOrders ? await repo.salesRanking(period.days) : null;
 
   return (
     <>
@@ -79,6 +82,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           )}
         </div>
       </section>
+
+      {ranking && <SalesRankingSection ranking={ranking} periodKey={period.key} showQuotes={canQuotes} />}
 
       <div className="mt-8 grid gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-1">

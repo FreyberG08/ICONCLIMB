@@ -14,7 +14,7 @@
 | Carrito (compra directa) con precios y existencias validados en el servidor | ✅ |
 | Lista y solicitud de cotización (incluye piezas **no catalogadas**) | ✅ |
 | Número de referencia y seguimiento público (número + correo) | ✅ |
-| Panel: dashboard con métricas reales, productos (crear, editar, duplicar, publicar, despublicar, archivar) | ✅ |
+| Panel: dashboard con métricas reales, más/menos vendidos y más cotizados por periodo, productos (crear, editar, duplicar, publicar, despublicar, archivar) | ✅ |
 | Fotografías: subida múltiple desde PC o cámara del teléfono, optimización automática, principal, orden, texto alternativo, eliminación, vista previa | ✅ |
 | Documentación técnica con autorización de descarga pública | ✅ |
 | Inventario: entradas, salidas, ajustes por conteo, reservas, despachos; responsable, fecha y motivo | ✅ |

@@ -3,6 +3,7 @@ import { normalizeSearch, normalizeSku, slugify } from "../format";
 import type { AdminRepository } from "./repository";
 import { DomainError } from "./repository";
 import type {
+  SalesRankRow, SalesRanking,
   AdminProduct, CatalogProductDetail, ImportReport, ImportRow, Permission, ProductInput, ProductStatus, StaffUser,
 } from "../types";
 import { CURRENCIES } from "../config";
@@ -237,3 +238,63 @@ export const EXPORT_COLUMNS = [
   "sku", "name", "status", "category", "brand", "model", "reference", "alt_codes", "sale_mode",
   "price", "currency", "cost", "on_hand", "reserved", "available", "min_stock", "location", "updated_at",
 ] as const;
+
+
+/** Línea de pedido o de cotización usada para el ranking. */
+export interface RankLine {
+  productId: string;
+  sku: string;
+  name: string;
+  quantity: number;
+  lineTotal: number;
+  currency: string;
+  requestId: string;
+}
+
+export interface RankCandidate {
+  productId: string;
+  sku: string;
+  name: string;
+  imageUrl: string | null;
+  currency: string;
+}
+
+function aggregate(lines: RankLine[], images: Map<string, string | null>) {
+  const map = new Map<string, SalesRankRow & { _req: Set<string> }>();
+  for (const l of lines) {
+    const row = map.get(l.productId) ?? {
+      productId: l.productId, sku: l.sku, name: l.name, imageUrl: images.get(l.productId) ?? null,
+      units: 0, revenue: 0, currency: l.currency, orders: 0, _req: new Set<string>(),
+    };
+    row.units += l.quantity;
+    row.revenue = Math.round((row.revenue + l.lineTotal) * 100) / 100;
+    row._req.add(l.requestId);
+    row.orders = row._req.size;
+    map.set(l.productId, row);
+  }
+  return [...map.values()].map(({ _req: _r, ...r }) => r);
+}
+
+/**
+ * Calcula el ranking a partir de líneas reales (nunca cifras inventadas).
+ * "Menos vendidos" considera los productos publicados de compra directa, incluidos
+ * los que no tienen ventas en el periodo, y excluye los que ya figuran como más vendidos.
+ */
+export function buildSalesRanking(sold: RankLine[], quoted: RankLine[], candidates: RankCandidate[], periodDays: number | null, limit = 5): SalesRanking {
+  const images = new Map(candidates.map((c) => [c.productId, c.imageUrl]));
+  const soldRows = aggregate(sold, images);
+  const best = soldRows.filter((r) => r.units > 0).sort((a, b) => b.units - a.units || b.revenue - a.revenue || a.name.localeCompare(b.name, "es")).slice(0, limit);
+  const bestIds = new Set(best.map((b) => b.productId));
+  const byId = new Map(soldRows.map((r) => [r.productId, r]));
+  const worst = candidates
+    .filter((c) => !bestIds.has(c.productId))
+    .map((c) => byId.get(c.productId) ?? { productId: c.productId, sku: c.sku, name: c.name, imageUrl: c.imageUrl, units: 0, revenue: 0, currency: c.currency, orders: 0 })
+    .sort((a, b) => a.units - b.units || a.revenue - b.revenue || a.name.localeCompare(b.name, "es"))
+    .slice(0, limit);
+  const mostQuoted = aggregate(quoted, images).sort((a, b) => b.orders - a.orders || b.units - a.units).slice(0, limit);
+  return { periodDays, best, worst, mostQuoted, totalUnits: sold.reduce((s, l) => s + l.quantity, 0) };
+}
+
+export function sinceDate(periodDays: number | null) {
+  return periodDays ? new Date(Date.now() - periodDays * 86400000).toISOString() : null;
+}

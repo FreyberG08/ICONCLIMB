@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import type { SupabaseClient, PostgrestError } from "@supabase/supabase-js";
 import type { AdminRepository, ProductListFilter, PublicRepository, UploadFile } from "../repository";
 import { DomainError } from "../repository";
-import { assertPerm, assertStatusChange, EXPORT_COLUMNS, importProductsWith, searchTokens } from "../shared";
+import { assertPerm, assertStatusChange, buildSalesRanking, EXPORT_COLUMNS, importProductsWith, searchTokens, sinceDate } from "../shared";
 import { publicStorageUrl, supabasePublic } from "../../supabase/server";
 import { can } from "../../permissions";
 import { slugify } from "../../format";
@@ -392,6 +392,36 @@ export function createSupabaseAdminRepo(sb: SupabaseClient, user: StaffUser): Ad
         recentQuotes: canQuotes ? (await self.listQuotes({ status: "all" })).slice(0, 5) : [],
         attention: attention.map(overviewToRow),
       };
+    },
+
+    async salesRanking(periodDays, limit = 5) {
+      assertPerm(user, "orders.view");
+      const since = sinceDate(periodDays);
+      let soldQ = sb.from("order_items").select("product_id, sku, name, quantity, line_total, order_id, orders!inner(status, currency, created_at)").not("product_id", "is", null).neq("orders.status", "cancelled");
+      if (since) soldQ = soldQ.gte("orders.created_at", since);
+      const canQuotes = can(user.role, "quotes.manage");
+      let quotedQ = sb.from("quote_items").select("product_id, sku, name, quantity, quote_id, quote_requests!inner(created_at)").not("product_id", "is", null);
+      if (since) quotedQ = quotedQ.gte("quote_requests.created_at", since);
+      const [sold, quoted, cands] = await Promise.all([
+        soldQ.limit(20000),
+        canQuotes ? quotedQ.limit(20000) : Promise.resolve({ data: [], error: null }),
+        sb.from("admin_product_overview").select("id, sku, name, currency, primary_image_path").eq("status", "published").eq("sale_mode", "direct").limit(10000),
+      ]);
+      return buildSalesRanking(
+        (check(sold) as Row[]).map((r) => ({
+          productId: r.product_id, sku: r.sku, name: r.name, quantity: r.quantity, lineTotal: Number(r.line_total),
+          currency: r.orders?.currency ?? "USD", requestId: r.order_id,
+        })),
+        ((check(quoted as any) as Row[]) ?? []).map((r) => ({
+          productId: r.product_id, sku: r.sku, name: r.name, quantity: r.quantity, lineTotal: 0, currency: "", requestId: r.quote_id,
+        })),
+        (check(cands) as Row[]).map((r) => ({
+          productId: r.id, sku: r.sku, name: r.name, currency: r.currency,
+          imageUrl: r.primary_image_path ? publicStorageUrl(IMAGES, r.primary_image_path) : null,
+        })),
+        periodDays,
+        limit,
+      );
     },
 
     async listProducts(f: ProductListFilter) {
