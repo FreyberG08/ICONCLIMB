@@ -4,8 +4,13 @@ import { createServerClient } from "@supabase/ssr";
 // Refresca la sesión de Supabase Auth en las rutas del panel.
 // La autorización real ocurre en el servidor (layout, acciones y RLS).
 export async function middleware(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key || process.env.ICON_DEMO_MODE === "true") return NextResponse.next();
 
   let response = NextResponse.next({ request });

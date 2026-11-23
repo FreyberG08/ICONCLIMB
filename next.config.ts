@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : null;
 
 const securityHeaders = [

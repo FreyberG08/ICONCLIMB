@@ -1,8 +1,26 @@
 // Configuración central. Las variables NEXT_PUBLIC_* son visibles en el navegador;
 // las demás solo existen en el servidor.
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+// Se aceptan los nombres que crea la integración Supabase ↔ Vercel y los manuales.
+export const SUPABASE_URL_VARS = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL"] as const;
+export const SUPABASE_KEY_VARS = [
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY",
+  "SUPABASE_ANON_KEY",
+  "SUPABASE_PUBLISHABLE_KEY",
+] as const;
+
+function firstEnv(names: readonly string[]) {
+  for (const n of names) {
+    const v = process.env[n]?.trim();
+    if (v) return v;
+  }
+  return "";
+}
+
+const supabaseUrl = firstEnv(SUPABASE_URL_VARS);
+const supabaseAnonKey = firstEnv(SUPABASE_KEY_VARS);
 
 /** Modo demostración: activo cuando no hay credenciales de Supabase o se fuerza con ICON_DEMO_MODE=true. */
 export const isDemoMode = process.env.ICON_DEMO_MODE === "true" || !supabaseUrl || !supabaseAnonKey;
