@@ -1,7 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "../config";
 
 /** Cliente con la sesión del usuario (cookies). Todas las consultas pasan por RLS. */
@@ -46,14 +46,45 @@ export function supabaseService() {
   return createClient(supabaseConfig.url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
+/**
+ * Ejecuta una operación administrativa probando cada clave de servicio disponible
+ * (formato nuevo sb_secret_… primero, luego la service_role heredada) hasta que
+ * Supabase acepte una. Los proyectos nuevos pueden tener desactivadas las claves heredadas.
+ */
+export async function withServiceClient<T extends { error: { message?: string } | null }>(
+  fn: (client: SupabaseClient) => Promise<T>,
+): Promise<T | null> {
+  const keys = serviceKeys();
+  if (!keys.length) return null;
+  let last: T | null = null;
+  for (const { key } of keys) {
+    const client = createClient(supabaseConfig.url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+    last = await fn(client);
+    const msg = last.error?.message ?? "";
+    if (!/invalid api key|legacy api keys are disabled|invalid jwt|unregistered api key/i.test(msg)) return last;
+  }
+  return last;
+}
+
 export function publicStorageUrl(bucket: string, path: string) {
   return `${supabaseConfig.url}/storage/v1/object/public/${bucket}/${path.split("/").map(encodeURIComponent).join("/")}`;
 }
 
 /** Clave de servicio sin espacios ni comillas accidentales al copiarla en Vercel. */
+function clean(v: string | undefined) {
+  return (v ?? "").trim().replace(/^["']|["']$/g, "");
+}
+
+/** Claves de servicio disponibles, en orden de preferencia (nueva primero). */
+export function serviceKeys(): { name: string; key: string }[] {
+  return [
+    { name: "SUPABASE_SECRET_KEY", key: clean(process.env.SUPABASE_SECRET_KEY) },
+    { name: "SUPABASE_SERVICE_ROLE_KEY", key: clean(process.env.SUPABASE_SERVICE_ROLE_KEY) },
+  ].filter((k) => k.key);
+}
+
 export function serviceKey() {
-  const raw = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || "";
-  return raw.trim().replace(/^["']|["']$/g, "");
+  return serviceKeys()[0]?.key ?? "";
 }
 
 /** Proyecto al que pertenece una clave JWT heredada (campo "ref"); null si no aplica. */

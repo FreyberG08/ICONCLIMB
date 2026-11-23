@@ -7,7 +7,7 @@ import { isDemoMode, site } from "@/lib/config";
 import { slugify } from "@/lib/format";
 import { can } from "@/lib/permissions";
 import { resetDemo } from "@/lib/data/demo/store";
-import { supabaseService } from "@/lib/supabase/server";
+import { withServiceClient } from "@/lib/supabase/server";
 import {
   brandSchema, categorySchema, firstError, intakeSchema, movementSchema, productInputSchema,
 } from "@/lib/validation";
@@ -316,14 +316,16 @@ export async function inviteUserAction(payload: { email: string; fullName: strin
     const repo = await getAdminRepo("users.manage");
     const p = z.object({ email: z.string().trim().toLowerCase().email(), fullName: z.string().trim().min(2).max(120), role: roleSchema }).parse(payload);
     if (isDemoMode) throw new DomainError("En modo demostración no se pueden invitar usuarios.");
-    const service = supabaseService();
-    if (!service) {
-      throw new DomainError("Configure SUPABASE_SERVICE_ROLE_KEY en el servidor para invitar desde aquí, o invite al usuario desde el panel de Supabase (Authentication › Users).");
+    const res = await withServiceClient((c) =>
+      c.auth.admin.inviteUserByEmail(p.email, {
+        data: { full_name: p.fullName },
+        redirectTo: `${site.url}/auth/callback?next=/admin/restablecer`,
+      }),
+    );
+    if (!res) {
+      throw new DomainError("Configure SUPABASE_SECRET_KEY o SUPABASE_SERVICE_ROLE_KEY en Vercel para invitar desde aquí, o cree el usuario en Supabase › Authentication › Users.");
     }
-    const { data, error } = await service.auth.admin.inviteUserByEmail(p.email, {
-      data: { full_name: p.fullName },
-      redirectTo: `${site.url}/auth/callback?next=/admin/restablecer`,
-    });
+    const { data, error } = res;
     if (error || !data.user) {
       const msg = error?.message ?? "";
       if (/not authorized|cannot be used/i.test(msg)) {
@@ -356,14 +358,11 @@ export async function createUserAction(payload: { email: string; fullName: strin
       })
       .parse(payload);
     if (isDemoMode) throw new DomainError("En modo demostración no se pueden crear usuarios.");
-    const service = supabaseService();
-    if (!service) throw new DomainError("Falta SUPABASE_SERVICE_ROLE_KEY en Vercel. Cree el usuario desde Supabase › Authentication › Users.");
-    const { data, error } = await service.auth.admin.createUser({
-      email: p.email,
-      password: p.password,
-      email_confirm: true,
-      user_metadata: { full_name: p.fullName },
-    });
+    const res = await withServiceClient((c) =>
+      c.auth.admin.createUser({ email: p.email, password: p.password, email_confirm: true, user_metadata: { full_name: p.fullName } }),
+    );
+    if (!res) throw new DomainError("Falta SUPABASE_SECRET_KEY o SUPABASE_SERVICE_ROLE_KEY en Vercel. Cree el usuario desde Supabase › Authentication › Users.");
+    const { data, error } = res;
     if (error || !data.user) {
       const msg = error?.message ?? "";
       if (/invalid api key/i.test(msg)) throw new DomainError("La clave de servicio de Supabase en Vercel no es válida para este proyecto. Abra /api/estado para ver el diagnóstico.");

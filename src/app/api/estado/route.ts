@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isDemoMode, SUPABASE_KEY_VARS, SUPABASE_URL_VARS, supabaseConfig } from "@/lib/config";
-import { keyProjectRef, serviceKey, urlProjectRef } from "@/lib/supabase/server";
+import { keyProjectRef, serviceKeys, urlProjectRef } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -9,12 +9,18 @@ export const dynamic = "force-dynamic";
  * pertenecen las claves (el identificador del proyecto ya es público en su URL);
  * nunca muestra los valores de las claves.
  */
+function values_invalid(m: Record<string, string>) {
+  return Object.values(m).some((v) => v !== "ok");
+}
+
 export async function GET() {
   const present = (names: readonly string[]) => Object.fromEntries(names.map((n) => [n, Boolean(process.env[n]?.trim())]));
   let conexion: "no_configurada" | "ok" | "error" = "no_configurada";
   let detalle: string | undefined;
   let claveServicio: "no_configurada" | "ok" | "invalida" | "error" = "no_configurada";
-  const svc = serviceKey();
+  const keys = serviceKeys();
+  const porVariable: Record<string, string> = {};
+  const svc = keys[0]?.key ?? "";
 
   if (!isDemoMode) {
     try {
@@ -28,25 +34,28 @@ export async function GET() {
       conexion = "error";
       detalle = "No se pudo contactar a Supabase. Revise la dirección del proyecto.";
     }
-    if (svc) {
+    for (const { name, key } of keys) {
       try {
         const res = await fetch(`${supabaseConfig.url}/auth/v1/admin/users?page=1&per_page=1`, {
-          headers: { apikey: svc, ...(svc.split(".").length === 3 ? { Authorization: `Bearer ${svc}` } : {}) },
+          headers: { apikey: key, ...(key.split(".").length === 3 ? { Authorization: `Bearer ${key}` } : {}) },
           cache: "no-store",
         });
-        claveServicio = res.ok ? "ok" : res.status === 401 || res.status === 403 ? "invalida" : "error";
+        porVariable[name] = res.ok ? "ok" : res.status === 401 || res.status === 403 ? "invalida" : `error ${res.status}`;
       } catch {
-        claveServicio = "error";
+        porVariable[name] = "error";
       }
     }
+    const values = Object.values(porVariable);
+    if (values.length) claveServicio = values.includes("ok") ? "ok" : values.every((v) => v === "invalida") ? "invalida" : "error";
   }
 
   const proyectoUrl = urlProjectRef(supabaseConfig.url);
   const proyectoClavePublica = keyProjectRef(supabaseConfig.anonKey);
-  const proyectoClaveServicio = svc ? keyProjectRef(svc) : null;
+  const proyectoClaveServicio = keys.map((k) => keyProjectRef(k.key)).find(Boolean) ?? null;
   const avisos: string[] = [];
   if (proyectoClavePublica && proyectoUrl && proyectoClavePublica !== proyectoUrl) avisos.push("La clave pública pertenece a OTRO proyecto de Supabase distinto al de la dirección.");
   if (proyectoClaveServicio && proyectoUrl && proyectoClaveServicio !== proyectoUrl) avisos.push("La clave de servicio pertenece a OTRO proyecto de Supabase distinto al de la dirección.");
+  if (claveServicio === "ok" && values_invalid(porVariable)) avisos.push("Una de las claves de servicio no es válida, pero la otra sí: la tienda usará la válida automáticamente.");
   if (claveServicio === "invalida" && !avisos.length) avisos.push("Supabase rechazó la clave de servicio: cópiela de nuevo completa (Project Settings › API Keys) y vuelva a desplegar.");
 
   return NextResponse.json(
@@ -60,6 +69,7 @@ export async function GET() {
       proyecto: { direccion: proyectoUrl, clave_publica: proyectoClavePublica, clave_servicio: proyectoClaveServicio },
       conexion,
       clave_servicio: claveServicio,
+      clave_servicio_por_variable: porVariable,
       ...(detalle ? { detalle } : {}),
       ...(avisos.length ? { avisos } : {}),
     },
