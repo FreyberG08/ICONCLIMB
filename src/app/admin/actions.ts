@@ -329,6 +329,7 @@ export async function inviteUserAction(payload: { email: string; fullName: strin
       if (/not authorized|cannot be used/i.test(msg)) {
         throw new DomainError("Supabase solo envía correos a miembros de su organización mientras no configure un servidor de correo propio (SMTP). Use «Crear con contraseña temporal».");
       }
+      if (/invalid api key/i.test(msg)) throw new DomainError("La clave de servicio de Supabase en Vercel no es válida para este proyecto. Abra /api/estado para ver el diagnóstico.");
       if (/rate limit/i.test(msg)) throw new DomainError("Se alcanzó el límite de correos de Supabase (pocos por hora). Use «Crear con contraseña temporal».");
       throw new DomainError(/already|registered|exists/i.test(msg) ? "Ya existe un usuario con ese correo." : `No se pudo enviar la invitación: ${msg || "error desconocido"}`);
     }
@@ -365,6 +366,7 @@ export async function createUserAction(payload: { email: string; fullName: strin
     });
     if (error || !data.user) {
       const msg = error?.message ?? "";
+      if (/invalid api key/i.test(msg)) throw new DomainError("La clave de servicio de Supabase en Vercel no es válida para este proyecto. Abra /api/estado para ver el diagnóstico.");
       throw new DomainError(/already|registered|exists/i.test(msg) ? "Ya existe un usuario con ese correo." : `No se pudo crear el usuario: ${msg || "error desconocido"}`);
     }
     await repo.updateUser(data.user.id, { role: p.role, active: true, fullName: p.fullName });

@@ -41,11 +41,38 @@ export function supabasePublic() {
  * desde el panel de Supabase. Nunca se importa en código de cliente.
  */
 export function supabaseService() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  const key = serviceKey();
   if (!key) return null;
   return createClient(supabaseConfig.url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
 export function publicStorageUrl(bucket: string, path: string) {
   return `${supabaseConfig.url}/storage/v1/object/public/${bucket}/${path.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+/** Clave de servicio sin espacios ni comillas accidentales al copiarla en Vercel. */
+export function serviceKey() {
+  const raw = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || "";
+  return raw.trim().replace(/^["']|["']$/g, "");
+}
+
+/** Proyecto al que pertenece una clave JWT heredada (campo "ref"); null si no aplica. */
+export function keyProjectRef(key: string): string | null {
+  const parts = key.split(".");
+  if (parts.length !== 3) return null;
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8"));
+    return typeof payload.ref === "string" ? payload.ref : null;
+  } catch {
+    return null;
+  }
+}
+
+export function urlProjectRef(url: string): string | null {
+  try {
+    const host = new URL(url).hostname;
+    return host.endsWith(".supabase.co") ? host.split(".")[0] : null;
+  } catch {
+    return null;
+  }
 }
