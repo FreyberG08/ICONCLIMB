@@ -329,10 +329,10 @@ export async function inviteUserAction(payload: { email: string; fullName: strin
     if (error || !data.user) {
       const msg = error?.message ?? "";
       if (/not authorized|cannot be used/i.test(msg)) {
-        throw new DomainError("Supabase solo envía correos a miembros de su organización mientras no configure un servidor de correo propio (SMTP). Use «Crear con contraseña temporal».");
+        throw new DomainError("Supabase solo envía correos a miembros de su organización mientras no configure un servidor de correo propio (SMTP). Use «Crear con contraseña».");
       }
       if (/invalid api key/i.test(msg)) throw new DomainError("La clave de servicio de Supabase en Vercel no es válida para este proyecto. Abra /api/estado para ver el diagnóstico.");
-      if (/rate limit/i.test(msg)) throw new DomainError("Se alcanzó el límite de correos de Supabase (pocos por hora). Use «Crear con contraseña temporal».");
+      if (/rate limit/i.test(msg)) throw new DomainError("Se alcanzó el límite de correos de Supabase (pocos por hora). Use «Crear con contraseña».");
       throw new DomainError(/already|registered|exists/i.test(msg) ? "Ya existe un usuario con ese correo." : `No se pudo enviar la invitación: ${msg || "error desconocido"}`);
     }
     // El perfil se crea inactivo por el trigger; el administrador lo activa con el rol elegido.
@@ -343,7 +343,7 @@ export async function inviteUserAction(payload: { email: string; fullName: strin
 }
 
 /**
- * Crea un usuario con contraseña temporal (sin depender del envío de correos,
+ * Crea un usuario con la contraseña que define el administrador (sin depender del envío de correos,
  * que en el plan gratuito de Supabase solo llega a miembros del equipo).
  */
 export async function createUserAction(payload: { email: string; fullName: string; role: Role; password: string }): Promise<ActionResult<{ message: string }>> {
@@ -354,7 +354,7 @@ export async function createUserAction(payload: { email: string; fullName: strin
         email: z.string().trim().toLowerCase().email("Correo inválido"),
         fullName: z.string().trim().min(2, "Indique el nombre").max(120),
         role: roleSchema,
-        password: z.string().min(10, "La contraseña temporal debe tener al menos 10 caracteres").max(72),
+        password: z.string().min(10, "La contraseña debe tener al menos 10 caracteres").max(72),
       })
       .parse(payload);
     if (isDemoMode) throw new DomainError("En modo demostración no se pueden crear usuarios.");
@@ -370,7 +370,7 @@ export async function createUserAction(payload: { email: string; fullName: strin
     }
     await repo.updateUser(data.user.id, { role: p.role, active: true, fullName: p.fullName });
     revalidatePath("/admin/usuarios");
-    return { message: `Usuario ${p.email} creado. Compártale la contraseña temporal por un canal seguro; podrá cambiarla con "¿Olvidó su contraseña?".` };
+    return { message: `Usuario ${p.email} creado. Ya puede ingresar al panel con la contraseña asignada.` };
   });
 }
 

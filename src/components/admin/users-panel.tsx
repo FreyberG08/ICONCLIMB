@@ -108,7 +108,7 @@ export function UsersPanel({ users, currentId, demo, canInvite }: { users: Staff
             >
               <div role="radiogroup" aria-label="Forma de alta" className="grid gap-2 sm:grid-cols-2">
                 {([
-                  ["password", "Crear con contraseña temporal", "Inmediato. Usted le comparte la contraseña y la persona la cambia después."],
+                  ["password", "Crear con contraseña", "Inmediato. Usted define la contraseña definitiva del usuario."],
                   ["email", "Enviar invitación por correo", "Requiere correo SMTP propio en Supabase; el plan gratuito solo envía a miembros del equipo."],
                 ] as const).map(([value, title, help]) => (
                   <button key={value} type="button" role="radio" aria-checked={mode === value} onClick={() => setMode(value)}
@@ -124,7 +124,7 @@ export function UsersPanel({ users, currentId, demo, canInvite }: { users: Staff
                 <Field label="Rol" htmlFor="inv-role"><Select id="inv-role" value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value as Role })}>{ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}</Select></Field>
               </div>
               {mode === "password" && (
-                <Field label="Contraseña temporal" htmlFor="inv-pass" hint="Cópiela antes de guardar y compártala por un canal seguro.">
+                <Field label="Contraseña" htmlFor="inv-pass" hint="Escriba la contraseña que usará la persona (mínimo 10 caracteres) o genere una segura. Compártala por un canal seguro.">
                   <div className="flex gap-2">
                     <Input id="inv-pass" required minLength={10} value={tempPassword} onChange={(e) => setTempPassword(e.target.value)} className="font-mono" />
                     <Button type="button" variant="outline" onClick={() => setTempPassword(generatePassword())}>Generar otra</Button>
