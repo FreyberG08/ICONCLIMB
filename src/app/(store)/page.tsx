@@ -85,12 +85,12 @@ export default async function HomePage() {
     <div className="relative mx-auto max-w-[460px]">
       <div data-hero-visual data-hero-hide className="relative aspect-[44/52] overflow-hidden rounded-2xl border border-steel-150 bg-white shadow-[0_50px_100px_-40px_rgb(10_33_73/0.45)] [transform-style:preserve-3d]">
         {site.heroImageUrl ? (
-          <Image src={site.heroImageUrl} alt="Repuestos de ascensor ICON" fill priority sizes="(min-width: 1024px) 460px, 90vw" className="object-cover" />
+          <Image src={site.heroImageUrl} alt="Repuestos de ascensor AICON" fill priority sizes="(min-width: 1024px) 460px, 90vw" className="object-cover" />
         ) : (
           <HeroVisual />
         )}
         <div className="absolute inset-x-3 bottom-3 flex items-center justify-between rounded-md border border-steel-150 bg-white/90 px-3 py-2 backdrop-blur">
-          <span className="font-mono text-[10px] tracking-[0.14em] text-steel-500">ICON · CLIMB PARTS</span>
+          <span className="font-mono text-[10px] tracking-[0.14em] text-steel-500">AICON · CLIMB PARTS</span>
           <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.14em] text-ok-600">
             <span className="size-1.5 animate-pulse rounded-full bg-ok-600" aria-hidden="true" /> CATÁLOGO EN LÍNEA
           </span>
@@ -248,7 +248,7 @@ export default async function HomePage() {
           <div className="lg:col-span-5">
             <Heading dark eyebrow="Respaldo" title={`Una iniciativa de ${site.legalName}`} />
             <p className="mt-6 text-[16px] leading-relaxed text-white/65" data-reveal>
-              ICON nace dentro de una empresa especializada en soluciones de transporte vertical. Detrás de cada ficha hay personas que conocen los
+              AICON nace dentro de una empresa especializada en soluciones de transporte vertical. Detrás de cada ficha hay personas que conocen los
               equipos, revisan la información técnica y responden por lo que se publica.
             </p>
           </div>

@@ -22,7 +22,7 @@ async function run<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
     if (e instanceof DomainError) return { ok: false, error: e.message };
     // redirect()/notFound() de Next.js deben propagarse.
     if (e && typeof e === "object" && "digest" in e) throw e;
-    console.error("[ICON admin]", e);
+    console.error("[AICON admin]", e);
     return { ok: false, error: "Ocurrió un error inesperado. Intente nuevamente." };
   }
 }

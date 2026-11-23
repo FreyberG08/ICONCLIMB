@@ -1,4 +1,4 @@
-# ICON · CLIMB PARTS
+# AICON · CLIMB PARTS
 
 Tienda online de repuestos para ascensores de **Ascensores CLIMB**: catálogo público con búsqueda por SKU, referencia, marca y modelo; compra directa y solicitudes de cotización; panel administrativo para catálogo, fotografías, inventario, pedidos y cotizaciones.
 
@@ -128,7 +128,7 @@ La matriz está en la tabla `role_permissions` y en `src/lib/permissions.ts` (ma
    - `NEXT_PUBLIC_SITE_URL` (p. ej. `https://icon.ejemplo.com`)
    - Opcionales: `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_CONTACT_*`, `NEXT_PUBLIC_LOGO_URL`, `NEXT_PUBLIC_HERO_IMAGE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
 3. **Deploy.**
-4. **Domains:** agregue el dominio de ICON y configure los DNS que indique Vercel. Actualice `NEXT_PUBLIC_SITE_URL` y la configuración de URLs de Supabase Auth.
+4. **Domains:** agregue el dominio de AICON y configure los DNS que indique Vercel. Actualice `NEXT_PUBLIC_SITE_URL` y la configuración de URLs de Supabase Auth.
 
 Los productos nuevos, fotos, precios y existencias se gestionan desde el panel: **no requieren volver a desplegar**. Las páginas públicas se refrescan al instante al guardar (revalidación bajo demanda) y cada 60 s como respaldo.
 
@@ -187,7 +187,7 @@ PSQL="psql -d icon_test" ./supabase/tests/concurrency.sh
 
 Tokens en `src/app/globals.css` (`@theme`): azules `climb-*`, grises fríos `steel-*`, señales `ok/warn/err`. **Los azules son provisionales**: al recibir el manual de marca basta con reemplazar los valores `--color-climb-*`. Tipografía Geist / Geist Mono (incluida en el proyecto, sin dependencias externas).
 
-El logo original se coloca en `public/brand/` y se activa con `NEXT_PUBLIC_LOGO_URL`. Mientras tanto se muestra un rótulo tipográfico “ICON”, que no pretende ser el logo. El hero usa una ilustración técnica animada hasta disponer de fotografía industrial (`NEXT_PUBLIC_HERO_IMAGE_URL`). Los productos sin foto muestran un marcador técnico “Fotografía pendiente”.
+El logo original se coloca en `public/brand/` y se activa con `NEXT_PUBLIC_LOGO_URL`. Mientras tanto se muestra un rótulo tipográfico “AICON”, que no pretende ser el logo. El hero usa una ilustración técnica animada hasta disponer de fotografía industrial (`NEXT_PUBLIC_HERO_IMAGE_URL`). Los productos sin foto muestran un marcador técnico “Fotografía pendiente”.
 
 ---
 

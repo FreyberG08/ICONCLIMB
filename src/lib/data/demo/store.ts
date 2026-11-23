@@ -284,7 +284,7 @@ export function persist() {
     fs.renameSync(tmp, DB_FILE);
   } catch (e) {
     // En entornos de solo lectura el modo demo sigue funcionando en memoria.
-    console.warn("[ICON demo] No se pudo guardar la base local:", (e as Error).message);
+    console.warn("[AICON demo] No se pudo guardar la base local:", (e as Error).message);
   }
 }
 

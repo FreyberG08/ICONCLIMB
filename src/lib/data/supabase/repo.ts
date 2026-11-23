@@ -27,7 +27,7 @@ function fail(error: PostgrestError | { message: string; code?: string } | null,
   if (code === "23503") throw new DomainError("El registro está en uso por otros elementos", "conflict");
   if (code === "P0002") throw new DomainError(message, "not_found");
   if (code === "23514" || code === "22023") throw new DomainError(message, code === "23514" ? "conflict" : "invalid");
-  console.error("[ICON supabase]", error);
+  console.error("[AICON supabase]", error);
   throw new DomainError(fallback);
 }
 

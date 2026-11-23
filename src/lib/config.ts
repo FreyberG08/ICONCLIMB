@@ -10,7 +10,7 @@ export const isDemoMode = process.env.ICON_DEMO_MODE === "true" || !supabaseUrl 
 export const supabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey };
 
 export const site = {
-  name: "ICON",
+  name: "AICON",
   legalName: process.env.NEXT_PUBLIC_COMPANY_NAME || "Ascensores CLIMB",
   tagline: "La pieza correcta. En el momento indicado.",
   description:

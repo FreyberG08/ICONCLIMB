@@ -4,7 +4,7 @@ import { can } from "@/lib/permissions";
 import { Sidebar } from "@/components/admin/sidebar";
 import { DemoBanner } from "@/components/store/demo-banner";
 
-export const metadata: Metadata = { title: { default: "Panel", template: "%s · Panel ICON" }, robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: { default: "Panel", template: "%s · Panel AICON" }, robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {

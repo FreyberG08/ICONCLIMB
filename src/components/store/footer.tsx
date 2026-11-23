@@ -69,7 +69,7 @@ export function Footer({ categories }: { categories: Category[] }) {
       </div>
       <div className="container-x flex flex-col gap-2 py-6 text-[12px] text-white/40 sm:flex-row sm:items-center sm:justify-between">
         <p>© {year} {site.legalName}. Todos los derechos reservados.</p>
-        <p className="font-mono tracking-wider">ICON · CLIMB PARTS</p>
+        <p className="font-mono tracking-wider">AICON · CLIMB PARTS</p>
       </div>
     </footer>
   );

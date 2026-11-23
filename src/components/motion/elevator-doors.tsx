@@ -60,7 +60,7 @@ export function ElevatorDoors() {
           },
         }, "<0.1")
         .add(() => {
-          if (counter.current) counter.current.textContent = "ICON";
+          if (counter.current) counter.current.textContent = "AICON";
         })
         .to(panel, { autoAlpha: 0, y: -12, duration: 0.45, ease: "power2.in" }, "+=0.35")
         .to(left, { xPercent: -101, duration: 1.15, ease: "expo.inOut" }, "<0.15")

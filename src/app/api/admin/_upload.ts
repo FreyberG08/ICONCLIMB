@@ -10,7 +10,7 @@ export function jsonError(e: unknown) {
   if (e && typeof e === "object" && "digest" in e) {
     return NextResponse.json({ error: "Sesión expirada. Vuelva a iniciar sesión." }, { status: 401 });
   }
-  console.error("[ICON upload]", e);
+  console.error("[AICON upload]", e);
   return NextResponse.json({ error: "No se pudo procesar el archivo" }, { status: 500 });
 }
 
