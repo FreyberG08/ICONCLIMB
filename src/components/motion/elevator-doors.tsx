@@ -92,7 +92,7 @@ export function ElevatorDoors() {
             <svg viewBox="0 0 12 12" className="size-4 animate-pulse text-climb-300" aria-hidden="true"><path d="M6 1 11 9H1z" fill="currentColor" /></svg>
             <span ref={counter} className="font-mono text-5xl font-semibold tracking-[0.12em] text-white tabular-nums [text-shadow:0_0_24px_rgb(130_169_227/0.8)]">00</span>
           </div>
-          <p className="mt-3 font-mono text-[10px] tracking-[0.3em] text-white/45">CLIMB PARTS</p>
+          <p className="mt-3 font-mono text-[10px] tracking-[0.3em] text-white/45">REPUESTOS PARA ASCENSORES</p>
         </div>
       </div>
     </div>

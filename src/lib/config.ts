@@ -11,10 +11,11 @@ export const supabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey };
 
 export const site = {
   name: "AICON",
-  legalName: process.env.NEXT_PUBLIC_COMPANY_NAME || "Ascensores CLIMB",
+  /** Razón social que aparece en el pie y en la política de privacidad. */
+  legalName: process.env.NEXT_PUBLIC_COMPANY_NAME || "AICON",
   tagline: "La pieza correcta. En el momento indicado.",
   description:
-    "Repuestos, componentes electrónicos, piezas mecánicas y accesorios para ascensores. Compra directa o solicitud de cotización con respaldo técnico de Ascensores CLIMB.",
+    "Repuestos, componentes electrónicos, piezas mecánicas y accesorios para ascensores. Compra directa o solicitud de cotización con respaldo técnico especializado.",
   url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),
   defaultCurrency: (process.env.NEXT_PUBLIC_DEFAULT_CURRENCY || "USD").toUpperCase(),
   locale: process.env.NEXT_PUBLIC_LOCALE || "es",

@@ -1,6 +1,6 @@
-# AICON · CLIMB PARTS
+# AICON
 
-Tienda online de repuestos para ascensores de **Ascensores CLIMB**: catálogo público con búsqueda por SKU, referencia, marca y modelo; compra directa y solicitudes de cotización; panel administrativo para catálogo, fotografías, inventario, pedidos y cotizaciones.
+**AICON** es una tienda online de repuestos para ascensores: catálogo público con búsqueda por SKU, referencia, marca y modelo; compra directa y solicitudes de cotización; panel administrativo para catálogo, fotografías, inventario, pedidos y cotizaciones.
 
 **Stack:** Next.js 15 (App Router) + TypeScript · Tailwind CSS 4 (sistema de diseño propio *Clean Industrial*) · Supabase (PostgreSQL, Auth, Storage, RLS) · Vercel.
 

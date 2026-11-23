@@ -14,7 +14,7 @@ export function Footer({ categories }: { categories: Category[] }) {
           <div className="md:col-span-4">
             <Logo inverted />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/60">
-              {site.tagline} Repuestos y componentes para transporte vertical, con el respaldo técnico de {site.legalName}.
+              {site.tagline} Repuestos y componentes para transporte vertical, con respaldo técnico especializado.
             </p>
             {wa && (
               <a href={wa} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-white/10 px-4 text-sm font-medium text-white ring-1 ring-white/15 transition-colors hover:bg-white/15">
@@ -69,7 +69,7 @@ export function Footer({ categories }: { categories: Category[] }) {
       </div>
       <div className="container-x flex flex-col gap-2 py-6 text-[12px] text-white/40 sm:flex-row sm:items-center sm:justify-between">
         <p>© {year} {site.legalName}. Todos los derechos reservados.</p>
-        <p className="font-mono tracking-wider">AICON · CLIMB PARTS</p>
+        <p className="font-mono tracking-wider">AICON · REPUESTOS PARA ASCENSORES</p>
       </div>
     </footer>
   );

@@ -59,7 +59,7 @@ export default async function HomePage() {
       </h1>
       <p data-hero-text data-hero-hide className="mt-7 max-w-xl text-[17px] leading-relaxed text-steel-600">
         Componentes electrónicos, piezas mecánicas y accesorios para ascensores. Compre en línea con precio autorizado o solicite una
-        cotización técnica, con el respaldo de {site.legalName}.
+        cotización técnica, con respaldo técnico especializado.
       </p>
       <div data-hero-search data-hero-hide className="mt-9 max-w-xl">
         <SearchBox size="lg" placeholder="SKU, referencia original, marca o nombre…" />
@@ -90,7 +90,7 @@ export default async function HomePage() {
           <HeroVisual />
         )}
         <div className="absolute inset-x-3 bottom-3 flex items-center justify-between rounded-md border border-steel-150 bg-white/90 px-3 py-2 backdrop-blur">
-          <span className="font-mono text-[10px] tracking-[0.14em] text-steel-500">AICON · CLIMB PARTS</span>
+          <span className="font-mono text-[10px] tracking-[0.14em] text-steel-500">AICON · REPUESTOS</span>
           <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.14em] text-ok-600">
             <span className="size-1.5 animate-pulse rounded-full bg-ok-600" aria-hidden="true" /> CATÁLOGO EN LÍNEA
           </span>
@@ -239,16 +239,16 @@ export default async function HomePage() {
         </section>
       )}
 
-      <Marquee dark items={["La pieza correcta", "En el momento indicado", "Respaldo técnico CLIMB", "Compatibilidad verificada"]} />
+      <Marquee dark items={["La pieza correcta", "En el momento indicado", "Respaldo técnico especializado", "Compatibilidad verificada"]} />
 
-      {/* RESPALDO CLIMB */}
-      <section id="respaldo" data-floor="05" data-floor-label="Respaldo" data-spotlight="" className="scroll-mt-24 overflow-hidden bg-climb-950 text-white" aria-label="Respaldo CLIMB">
+      {/* POR QUÉ AICON */}
+      <section id="respaldo" data-floor="05" data-floor-label="Por qué AICON" data-spotlight="" className="scroll-mt-24 overflow-hidden bg-climb-950 text-white" aria-label="Por qué AICON">
         <div className="journey-grid absolute inset-0" aria-hidden="true" />
         <div className="container-x relative grid gap-14 py-24 lg:grid-cols-12 lg:py-32">
           <div className="lg:col-span-5">
-            <Heading dark eyebrow="Respaldo" title={`Una iniciativa de ${site.legalName}`} />
+            <Heading dark eyebrow="Por qué AICON" title="Especialistas en repuestos para ascensores" />
             <p className="mt-6 text-[16px] leading-relaxed text-white/65" data-reveal>
-              AICON nace dentro de una empresa especializada en soluciones de transporte vertical. Detrás de cada ficha hay personas que conocen los
+              AICON es una tienda dedicada exclusivamente al transporte vertical. Detrás de cada ficha hay personas que conocen los
               equipos, revisan la información técnica y responden por lo que se publica.
             </p>
           </div>

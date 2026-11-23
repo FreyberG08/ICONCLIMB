@@ -2,7 +2,7 @@
   "name": "icon-climb-parts",
   "version": "0.1.0",
   "private": true,
-  "description": "AICON — tienda online de repuestos para ascensores de Ascensores CLIMB",
+  "description": "AICON — tienda online de repuestos para ascensores",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

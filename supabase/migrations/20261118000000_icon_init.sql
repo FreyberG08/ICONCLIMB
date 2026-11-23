@@ -1,5 +1,5 @@
 -- =============================================================================
--- AICON · CLIMB PARTS — Esquema inicial
+-- AICON — Esquema inicial
 -- Supabase PostgreSQL · RLS · Inventario transaccional · Auditoría
 -- =============================================================================
 -- Principios:

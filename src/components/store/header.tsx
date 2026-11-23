@@ -50,7 +50,7 @@ export function Header({ categories }: { categories: NavCategory[] }) {
     { href: "/catalogo", label: "Catálogo" },
     { href: "/#como-comprar", label: "Cómo comprar" },
     { href: "/seguimiento", label: "Seguimiento" },
-    { href: "/#respaldo", label: "Respaldo CLIMB" },
+    { href: "/#respaldo", label: "Por qué AICON" },
   ];
 
   return (

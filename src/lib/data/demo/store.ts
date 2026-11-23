@@ -188,7 +188,7 @@ function seed(): DemoDB {
       shortDescription: it.shortDescription ?? null,
       description:
         "Ficha de demostración generada automáticamente para mostrar el funcionamiento de la plataforma. " +
-        "No representa un producto real del inventario de Ascensores CLIMB. Las características técnicas, compatibilidades y precios definitivos se cargan desde el panel administrativo.",
+        "No representa un producto real del inventario de AICON. Las características técnicas, compatibilidades y precios definitivos se cargan desde el panel administrativo.",
       specs: it.specs ?? [],
       price: it.price ?? null,
       currency: "USD",

@@ -7,15 +7,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — Repuestos para ascensores | ${site.legalName}`,
-    template: `%s | ${site.name} · ${site.legalName}`,
+    default: `${site.name} — Repuestos para ascensores`,
+    template: `%s | ${site.name}`,
   },
   description: site.description,
   applicationName: site.name,
   openGraph: {
     type: "website",
     locale: "es",
-    siteName: `${site.name} · ${site.legalName}`,
+    siteName: site.name,
     title: `${site.name} — ${site.tagline}`,
     description: site.description,
   },

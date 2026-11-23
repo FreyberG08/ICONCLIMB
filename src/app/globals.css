@@ -2,7 +2,7 @@
 
 /* ==========================================================================
    AICON · Sistema de diseño CLEAN INDUSTRIAL
-   Paleta provisional: los azules CLIMB deben validarse con los archivos de
+   Paleta provisional: los azules de marca deben validarse con los archivos de
    marca definitivos. Basta con ajustar los tokens --color-climb-*.
    ========================================================================== */
 
@@ -10,7 +10,7 @@
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  /* Azules corporativos CLIMB (provisionales) */
+  /* Azules de marca (provisionales; los tokens conservan el prefijo "climb") */
   --color-climb-50: #eef4fc;
   --color-climb-100: #dbe7f8;
   --color-climb-200: #b6cdf0;
